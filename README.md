@@ -120,7 +120,7 @@ Base de datos OLAP orientada a columnas, diseñada para análisis de grandes vol
 Como paso previo a la carga en cualquier motor de base de datos, se incluye un Jupyter Notebook de EDA que permite entender la estructura, calidad y características del dataset crudo.
 
 **Directorio**: `/eda`  
-**Archivo principal**: `eda_temperatura_antioquia.ipynb`
+**Archivo principal**: [`eda_temperatura_antioquia.ipynb`](https://github.com/jdrodas/TemperaturaAntioquiaTSDBS/blob/main/eda/eda_temperatura_antioquia.ipynb)
 
 ### Contenido esperado del Notebook
 
