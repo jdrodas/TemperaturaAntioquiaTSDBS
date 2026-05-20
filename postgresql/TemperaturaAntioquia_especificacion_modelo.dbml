@@ -1,0 +1,69 @@
+// Scripts de clase - Mayo 2026
+// Juan Dario Rodas - jdrodas@hotmail.com
+
+// Proyecto: Analisis de Temperatura en Antioquia para el año 2025
+// Version: Relacional - Modelado en DBML
+
+
+Table "departamentos" {
+  "id" integer [pk, increment, note: 'Id del departamento']
+  "nombre" varchar(100) [unique, not null, note: 'Nombre del departamento']
+  Note: 'Departamentos de Colombia'
+}
+
+Table "zonas" {
+  "id" integer [pk, increment, note: 'Id de la zona']
+  "nombre" varchar(100) [unique, not null, note: 'Nombre de la zona']
+  Note: 'Zonas Hidrográficas de Colombia'
+}
+
+Table "municipios" {
+  "id" integer [pk, increment, note: 'Id del municipio']
+  "nombre" varchar(100) [not null, note: 'nombre del municipio']
+  "departamento_id" integer [not null, note: 'Id del departamento al que pertenece el municipio']
+  "zona_id" integer [not null, note: 'Id de la zona hidrográfica donde está ubicado el municipio']
+
+  Indexes {
+    (nombre, departamento_id) [unique, name: "nombre_municipio_en_departamento_uk"]
+  }
+  Note: 'Municipios de Colombia ubicados en departamentos y zonas hidrográficas'
+}
+
+Table "estaciones" {
+  "id" varchar(10) [pk, not null, note: 'Id de la estación']
+  "nombre" varchar(100) [not null, note: 'nombre de la estación']
+  "municipio_id" integer [not null, note: 'Id del municipio donde está la estación']
+  "latitud" float [not null, note: 'Latitud donde está ubicada la estación']
+  "longitud" float [not null, note: 'Longitud donde está ubicada la estación']
+
+  Indexes {
+    (latitud, longitud) [unique, name: "ubicacion_estacion_uk"]
+  }
+  Note: 'Estaciones de Medición de Temperatura'
+}
+
+Table "sensores" {
+  "id" varchar(4) [pk, not null, note: 'Id del sensor']
+  "nombre" varchar(100) [unique, not null, note: 'Nombre del sensor']
+  Note: 'Sensores de temperatura utilizados para las observaciones de temperatura'
+}
+
+Table "observaciones" {
+  "id" integer [pk, increment, note: 'Id de la observación']
+  "estacion_id" varchar(10) [not null, note: 'Id de la estación que hizo la observación']
+  "sensor_id" varchar(4) [not null, note: 'Id del sensor con el que se hizo la observación']
+  "valor" float [not null, note: 'valor de temperatura obtenido en la observación']
+  "unidad_medida" varchar(4) [not null, note: 'Unidad de medida de la temperatura observada']
+  "fecha" timestamp [not null, note: 'fecha en la que se realizó la la observación de temperatura']
+  Note: 'Observaciones de temperatura realizadas por las estaciones'
+}
+
+Ref:"departamentos"."id" < "municipios"."departamento_id"
+
+Ref:"zonas"."id" < "municipios"."zona_id"
+
+Ref:"municipios"."id" < "estaciones"."municipio_id"
+
+Ref:"estaciones"."id" < "observaciones"."estacion_id"
+
+Ref:"sensores"."id" < "observaciones"."sensor_id"

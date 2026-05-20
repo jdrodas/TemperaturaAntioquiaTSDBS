@@ -87,7 +87,10 @@ El Notebook de EDA (ver sección correspondiente) documenta y trata estos proble
 
 Implementación tradicional usando un modelo relacional normalizado. Sirve como línea base para comparar el rendimiento y complejidad del diseño con las soluciones especializadas.
 
-**Directorio**: `/postgresql`
+**Directorio**: 
+
+[`/postgresql`](https://github.com/jdrodas/TemperaturaAntioquiaTSDBS/blob/main/postgresql)
+
 
 ### 2. TimescaleDB
 
