@@ -1,4 +1,4 @@
-# Temperatura Antioquia 2023–2026
+# Temperatura Antioquia 2024–2026
 
 ## Comparativo de Modelado de Bases de Datos para Series de Tiempo
 
@@ -17,8 +17,8 @@ Los datos originales fueron tomados de la Plataforma Nacional de Datos Abiertos 
 Filtros aplicados:
 
 - **Departamento**: Antioquia
-- **Rango fechas**: Enero 1 de 2023, 12:00 am a Marzo 31 de 2026, 11:59 pm.
-- **Total registros estimados (tras ampliación del rango)**: ~2.000.000 filas.
+- **Rango fechas**: Enero 1 de 2024, 12:00 am a Abril 30 de 2026, 11:59 pm.
+- **Total registros estimados (tras ampliación del rango)**: ~1.266.402 filas.
 
 **Importante**: Los datos aquí expuestos son utilizados con fines académicos. Por favor acceda al recurso relacionado para conocer más información al respecto.
 
@@ -29,7 +29,7 @@ Filtros aplicados:
 1. **Diseñar** modelos de datos apropiados para series de tiempo en cada tecnología
 2. **Implementar** esquemas y consultas representativas del dominio
 3. **Analizar** las consideraciones de diseño específicas de cada aproximación
-4. **Comparar** rendimiento, escalabilidad y complejidad de implementación con ~2 millones de registros
+4. **Comparar** rendimiento, escalabilidad y complejidad de implementación con ~1.2 millones de registros
 5. **Documentar** ventajas y desventajas de cada solución
 6. **Explorar** la calidad de los datos crudos mediante EDA antes de la carga
 
@@ -40,7 +40,7 @@ Filtros aplicados:
 El caso de estudio se centra en un sistema de **monitoreo de temperatura ambiente** con las siguientes características:
 
 - **Múltiples estaciones de medición** distribuidas en diferentes municipios del departamento de Antioquia
-- **Período de análisis**: Enero 2023 – Marzo 2026 (~3 años)
+- **Período de análisis**: Enero 2024 – Abril 2026 (~2 años, 4 meses)
 - **Frecuencia de medición**: Aproximadamente cada 15 minutos
 - **Datos temporales**: Timestamps precisos para cada medición
 
@@ -48,7 +48,7 @@ La ampliación del rango a tres años permite realizar análisis estacionales po
 
 Este dominio es ideal para evaluar bases de datos de series de tiempo debido a:
 
-- Alto volumen de inserciones secuenciales (~2 millones de registros)
+- Alto volumen de inserciones secuenciales (~1.2 millones de registros)
 - Patrones de consulta basados en rangos temporales
 - Necesidad de agregaciones y análisis estadísticos
 - Importancia de la eficiencia en almacenamiento
@@ -60,16 +60,21 @@ Este dominio es ideal para evaluar bases de datos de series de tiempo debido a:
 
 Cada registro en el archivo fuente (CSV exportado desde datos.gov.co) solo contiene las siguientes columnas:
 
-| Columna           | Tipo sugerido     | Descripción                                                                 |
-|-------------------|-------------------|-----------------------------------------------------------------------------|
-| `CodigoEstacion`  | `VARCHAR` / `TEXT` | Identificador único de la estación de medición                             |
-| `CodigoSensor`    | `VARCHAR` / `TEXT` | Código del sensor asociado a la medición (ej. `0068`, `0071`)             |
-| `FechaObservacion`| `TIMESTAMP`        | Fecha y hora de la medición (formato: `YYYY Mon DD HH:MM:SS AM/PM`)        |
-| `ValorObservado`  | `FLOAT` / `DOUBLE` | Temperatura registrada en grados Celsius (usa coma como separador decimal) |
-| `NombreEstacion`  | `VARCHAR` / `TEXT` | Nombre descriptivo de la estación meteorológica                            |
-| `Municipio`       | `VARCHAR` / `TEXT` | Municipio donde se ubica la estación                                       |
-| `ZonaHidrografica`| `VARCHAR` / `TEXT` | Zona hidrográfica a la que pertenece la estación (ej. `NECHÍ`, `CAUCA`)   |
-| `NombreVariable`  | `VARCHAR` / `TEXT` | Descripción de la variable medida (ej. `TEMPERATURA DEL AIRE A 2 m`)      |
+| Columna           	| Tipo sugerido     	| Descripción                                                                |
+|-----------------------|-----------------------|----------------------------------------------------------------------------|
+| `CodigoEstacion`  	| `VARCHAR` / `TEXT` 	| Identificador único de la estación de medición                             |
+| `CodigoSensor`    	| `VARCHAR` / `TEXT` 	| Código del sensor asociado a la medición (ej. `0068`, `0071`)              |
+| `FechaObservacion`	| `TIMESTAMP`        	| Fecha y hora de la medición (formato: `YYYY Mon DD HH:MM:SS AM/PM`)        |
+| `ValorObservado`  	| `FLOAT` / `DOUBLE` 	| Temperatura registrada en grados Celsius (usa coma como separador decimal) |
+| `NombreEstacion`  	| `VARCHAR` / `TEXT` 	| Nombre descriptivo de la estación meteorológica                            |
+| `Departamento`    	| `VARCHAR` / `TEXT` 	| Departamento donde se ubica la estación                                    |
+| `Municipio`       	| `VARCHAR` / `TEXT` 	| Municipio donde se ubica la estación                                       |
+| `ZonaHidrografica`	| `VARCHAR` / `TEXT` 	| Zona hidrográfica a la que pertenece la estación (ej. `NECHÍ`, `CAUCA`)    |
+| `Latitud`       		| `FLOAT` / `DOUBLE` 	| Componente latitud de la coordenada geográfica de la estación 			 |
+| `Longitud`       		| `FLOAT` / `DOUBLE` 	| Componente longitud de la coordenada geográfica de la estación             |
+| `DescripcionSensor`  	| `VARCHAR` / `TEXT` 	| Nombre del sensor utilizados												 |
+| `UnidadMedida`  		| `VARCHAR` / `TEXT` 	| Unidad de medida para el dato medido										 |
+
 
 **Nota sobre calidad de datos**: Los datos crudos presentan problemas típicos de fuentes IoT:   
 - valores faltantes

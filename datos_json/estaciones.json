@@ -1,0 +1,362 @@
+[
+  {
+    "estacion_id": "1111500036",
+    "estacion_nombre": "ABRIAQUI",
+    "municipio_id": 31,
+    "municipio_nombre": "ABRIAQUÍ",
+    "latitud": 6.6363,
+    "longitud": -76.070733333
+  },
+  {
+    "estacion_id": "2620500209",
+    "estacion_nombre": "ACUEDUCTO ARMENIA",
+    "municipio_id": 9,
+    "municipio_nombre": "ARMENIA",
+    "latitud": 6.161666667,
+    "longitud": -75.775805556
+  },
+  {
+    "estacion_id": "0023085270",
+    "estacion_nombre": "AEROPUERTO J.M. CORDOVA",
+    "municipio_id": 3,
+    "municipio_nombre": "RIONEGRO",
+    "latitud": 6.1686111,
+    "longitud": -75.42611111
+  },
+  {
+    "estacion_id": "0027015330",
+    "estacion_nombre": "AEROPUERTO OLAYA HERRERA",
+    "municipio_id": 26,
+    "municipio_nombre": "MEDELLÍN",
+    "latitud": 6.224679,
+    "longitud": -75.588225
+  },
+  {
+    "estacion_id": "0023175020",
+    "estacion_nombre": "AEROPUERTO OTU",
+    "municipio_id": 1,
+    "municipio_nombre": "REMEDIOS",
+    "latitud": 7.01175,
+    "longitud": -74.71630556
+  },
+  {
+    "estacion_id": "2701500213",
+    "estacion_nombre": "ALTO DE LA CRUZ",
+    "municipio_id": 19,
+    "municipio_nombre": "AMALFI",
+    "latitud": 6.91,
+    "longitud": -75.078888889
+  },
+  {
+    "estacion_id": "0027010850",
+    "estacion_nombre": "AMALFI",
+    "municipio_id": 19,
+    "municipio_nombre": "AMALFI",
+    "latitud": 6.905555556,
+    "longitud": -75.07722222
+  },
+  {
+    "estacion_id": "2702500107",
+    "estacion_nombre": "ANGOSTURA",
+    "municipio_id": 20,
+    "municipio_nombre": "ANGOSTURA",
+    "latitud": 6.900555556,
+    "longitud": -75.326019444
+  },
+  {
+    "estacion_id": "0027025030",
+    "estacion_nombre": "ANORI",
+    "municipio_id": 21,
+    "municipio_nombre": "ANORÍ",
+    "latitud": 7.0719,
+    "longitud": -75.1505
+  },
+  {
+    "estacion_id": "0027015320",
+    "estacion_nombre": "ARAGON",
+    "municipio_id": 28,
+    "municipio_nombre": "SANTA ROSA DE OSOS",
+    "latitud": 6.78,
+    "longitud": -75.56
+  },
+  {
+    "estacion_id": "0011110110",
+    "estacion_nombre": "BOQUERON DE TOYO",
+    "municipio_id": 35,
+    "municipio_nombre": "GIRALDO",
+    "latitud": 6.699444444,
+    "longitud": -75.9775
+  },
+  {
+    "estacion_id": "1111500203",
+    "estacion_nombre": "CAMPO ALEGRE",
+    "municipio_id": 33,
+    "municipio_nombre": "DABEIBA",
+    "latitud": 7.026813889,
+    "longitud": -76.252825
+  },
+  {
+    "estacion_id": "0011115020",
+    "estacion_nombre": "CAÑASGORDAS",
+    "municipio_id": 32,
+    "municipio_nombre": "CAÑASGORDAS",
+    "latitud": 6.758027778,
+    "longitud": -76.02966667
+  },
+  {
+    "estacion_id": "0023085160",
+    "estacion_nombre": "CORRIENTES",
+    "municipio_id": 6,
+    "municipio_nombre": "SAN VICENTE",
+    "latitud": 6.311944444,
+    "longitud": -75.25355556
+  },
+  {
+    "estacion_id": "2614500116",
+    "estacion_nombre": "EL JARDIN CUENCA ALTA RIO RISARALDA",
+    "municipio_id": 12,
+    "municipio_nombre": "JARDÍN",
+    "latitud": 5.593375,
+    "longitud": -75.796397778
+  },
+  {
+    "estacion_id": "2620500211",
+    "estacion_nombre": "EL PLAN",
+    "municipio_id": 10,
+    "municipio_nombre": "FREDONIA",
+    "latitud": 5.924716667,
+    "longitud": -75.667316667
+  },
+  {
+    "estacion_id": "0023085080",
+    "estacion_nombre": "GRANJA EXPERIMENTAL EL NUS",
+    "municipio_id": 5,
+    "municipio_nombre": "SAN ROQUE",
+    "latitud": 6.483583333,
+    "longitud": -74.83669444
+  },
+  {
+    "estacion_id": "0027015190",
+    "estacion_nombre": "GUAYABITO",
+    "municipio_id": 29,
+    "municipio_nombre": "SANTO DOMINGO",
+    "latitud": 6.540388889,
+    "longitud": -75.14675
+  },
+  {
+    "estacion_id": "0026225060",
+    "estacion_nombre": "HACIENDA COTOVE",
+    "municipio_id": 15,
+    "municipio_nombre": "SANTA FE DE ANTIOQUIA",
+    "latitud": 6.533916667,
+    "longitud": -75.82733333
+  },
+  {
+    "estacion_id": "0026175040",
+    "estacion_nombre": "HACIENDA TUNEZ",
+    "municipio_id": 10,
+    "municipio_nombre": "FREDONIA",
+    "latitud": 5.80025,
+    "longitud": -75.65097222
+  },
+  {
+    "estacion_id": "2621500070",
+    "estacion_nombre": "ITUANGO",
+    "municipio_id": 11,
+    "municipio_nombre": "ITUANGO",
+    "latitud": 7.161433333,
+    "longitud": -75.762886111
+  },
+  {
+    "estacion_id": "0025021480",
+    "estacion_nombre": "LA ESPERANZA RADIO",
+    "municipio_id": 27,
+    "municipio_nombre": "NECHÍ",
+    "latitud": 8.03,
+    "longitud": -74.79
+  },
+  {
+    "estacion_id": "0027030140",
+    "estacion_nombre": "LA PALMA DE COCO",
+    "municipio_id": 30,
+    "municipio_nombre": "SEGOVIA",
+    "latitud": 7.236111111,
+    "longitud": -74.80794444
+  },
+  {
+    "estacion_id": "0027015260",
+    "estacion_nombre": "LA SALADA",
+    "municipio_id": 23,
+    "municipio_nombre": "CALDAS",
+    "latitud": 6.048361111,
+    "longitud": -75.62466667
+  },
+  {
+    "estacion_id": "0027011100",
+    "estacion_nombre": "LAS BRISAS",
+    "municipio_id": 30,
+    "municipio_nombre": "SEGOVIA",
+    "latitud": 7.158805556,
+    "longitud": -74.82183333
+  },
+  {
+    "estacion_id": "0023085260",
+    "estacion_nombre": "LA SELVA",
+    "municipio_id": 3,
+    "municipio_nombre": "RIONEGRO",
+    "latitud": 6.131916667,
+    "longitud": -75.41455556
+  },
+  {
+    "estacion_id": "0023105070",
+    "estacion_nombre": "MACEO",
+    "municipio_id": 8,
+    "municipio_nombre": "YOLOMBÓ",
+    "latitud": 6.571638889,
+    "longitud": -74.79472222
+  },
+  {
+    "estacion_id": "0026185020",
+    "estacion_nombre": "MESOPOTAMIA",
+    "municipio_id": 13,
+    "municipio_nombre": "LA UNIÓN",
+    "latitud": 5.88636111,
+    "longitud": -75.31863889
+  },
+  {
+    "estacion_id": "0027015310",
+    "estacion_nombre": "METROMEDELLIN",
+    "municipio_id": 22,
+    "municipio_nombre": "BELLO",
+    "latitud": 6.32975,
+    "longitud": -75.55211111
+  },
+  {
+    "estacion_id": "0011115040",
+    "estacion_nombre": "MUSINGA",
+    "municipio_id": 34,
+    "municipio_nombre": "FRONTINO",
+    "latitud": 6.777972222,
+    "longitud": -76.20333333
+  },
+  {
+    "estacion_id": "0011110010",
+    "estacion_nombre": "NORMAL SANTA TERESA",
+    "municipio_id": 34,
+    "municipio_nombre": "FRONTINO",
+    "latitud": 6.763333333,
+    "longitud": -76.13361111
+  },
+  {
+    "estacion_id": "0026200120",
+    "estacion_nombre": "OTRAMINA",
+    "municipio_id": 17,
+    "municipio_nombre": "TITIRIBÍ",
+    "latitud": 6.07294444,
+    "longitud": -75.79458333
+  },
+  {
+    "estacion_id": "0027015280",
+    "estacion_nombre": "PARAMO BELMIRA",
+    "municipio_id": 25,
+    "municipio_nombre": "ENTRERRIOS",
+    "latitud": 6.632027778,
+    "longitud": -75.64444444
+  },
+  {
+    "estacion_id": "0012015100",
+    "estacion_nombre": "PISTA INDIRA",
+    "municipio_id": 37,
+    "municipio_nombre": "TURBO",
+    "latitud": 7.94075,
+    "longitud": -76.69616667
+  },
+  {
+    "estacion_id": "2308500071",
+    "estacion_nombre": "RETIRO",
+    "municipio_id": 2,
+    "municipio_nombre": "RETIRO",
+    "latitud": 6.08211,
+    "longitud": -75.56640167
+  },
+  {
+    "estacion_id": "0023085220",
+    "estacion_nombre": "SAN CARLOS",
+    "municipio_id": 4,
+    "municipio_nombre": "SAN CARLOS",
+    "latitud": 6.157666667,
+    "longitud": -75.03891667
+  },
+  {
+    "estacion_id": "0026185050",
+    "estacion_nombre": "SANTA BARBARA",
+    "municipio_id": 14,
+    "municipio_nombre": "SANTA BÁRBARA",
+    "latitud": 5.859583333,
+    "longitud": -75.55627778
+  },
+  {
+    "estacion_id": "0027010810",
+    "estacion_nombre": "SANTA ELENA",
+    "municipio_id": 26,
+    "municipio_nombre": "MEDELLÍN",
+    "latitud": 6.196888889,
+    "longitud": -75.51675
+  },
+  {
+    "estacion_id": "0026255030",
+    "estacion_nombre": "SANTA ISABEL VALDIVIA",
+    "municipio_id": 18,
+    "municipio_nombre": "VALDIVIA",
+    "latitud": 7.157222222,
+    "longitud": -75.442275
+  },
+  {
+    "estacion_id": "0027035050",
+    "estacion_nombre": "SENA - EL BAGRE",
+    "municipio_id": 24,
+    "municipio_nombre": "EL BAGRE",
+    "latitud": 7.584666667,
+    "longitud": -74.800694444
+  },
+  {
+    "estacion_id": "0026180180",
+    "estacion_nombre": "SONSON",
+    "municipio_id": 16,
+    "municipio_nombre": "SONSÓN",
+    "latitud": 5.71525,
+    "longitud": -75.2945
+  },
+  {
+    "estacion_id": "0012015060",
+    "estacion_nombre": "TULENAPA",
+    "municipio_id": 36,
+    "municipio_nombre": "CAREPA",
+    "latitud": 7.77,
+    "longitud": -76.67
+  },
+  {
+    "estacion_id": "0012025040",
+    "estacion_nombre": "TURBO",
+    "municipio_id": 37,
+    "municipio_nombre": "TURBO",
+    "latitud": 8.091805556,
+    "longitud": -76.71633333
+  },
+  {
+    "estacion_id": "2620500210",
+    "estacion_nombre": "UFRANÁ",
+    "municipio_id": 17,
+    "municipio_nombre": "TITIRIBÍ",
+    "latitud": 6.085388889,
+    "longitud": -75.811972222
+  },
+  {
+    "estacion_id": "0023105030",
+    "estacion_nombre": "VEGACHI",
+    "municipio_id": 7,
+    "municipio_nombre": "VEGACHÍ",
+    "latitud": 6.774111111,
+    "longitud": -74.79652778
+  }
+]

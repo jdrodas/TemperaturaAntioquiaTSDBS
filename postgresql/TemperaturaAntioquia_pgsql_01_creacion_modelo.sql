@@ -1,7 +1,7 @@
 -- Scripts de clase - Mayo de 2026
 -- Juan Dario Rodas - jdrodas@hotmail.com
 
--- Proyecto: Analisis de Temperatura en Antioquia para el año 2023 y 2026
+-- Proyecto: Analisis de Temperatura en Antioquia para el año 2024 y 2026
 -- Motor de Base de datos: PostgreSQL 18.x
 -- Version: Relacional
 
@@ -20,8 +20,8 @@ docker run --name tempant-pgsql -e POSTGRES_PASSWORD=unaClav3 -d -p 5432:5432 po
 -- ***********************************
 
 /*
-Temperatura Antioquia 2023-2026
-Análisis de la temperatura para el departamento de Antioquia en el 2023-2026, 
+Temperatura Antioquia 2024-2026
+Análisis de la temperatura para el departamento de Antioquia en el 2024-2026, 
 usando diferentes tecnologías de almacenamiento de datos.
 
 Los datos originales fueron tomados de la Plataforma Nacional de Datos 
@@ -34,7 +34,7 @@ https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Datos-Hidrometeorol-gi
 Filtros aplicados:
 
 Departamento: Antioquia
-Rango fechas: Enero 1 de 2023, 12:00 am a Marzo 31 2026, 11:58 pm.
+Rango fechas: Enero 1 de 2024, 12:00 am a Abril 30 2026, 11:58 pm.
 Total registros iniciales antes de control de calidad: -- Pendiente determinar
 
 Importante:
@@ -169,15 +169,20 @@ AND object_type = 'SEQUENCE';
 -- Tabla datos temporales
 create table datos_temporales
 (
-    codigoestacion      text,
-    nombreestacion      text,
-    codigoSensor        text,
-    descripcionSensor   text,
+    codigoestacion      text,    
+    codigosensor        text,
     fechaobservacion    text,
     valorobservado      text,
+    nombreestacion      text,
+    departamento        text,
     municipio           text,
-    zonahidrografica    text
+    zonahidrografica    text,
+    latitud             text,
+    longitud            text,
+    descripcionsensor   text,
+    UnidadMedida        text
 );
+
 
 -- =====================================
 -- Creación de tablas del modelo
@@ -227,13 +232,18 @@ create table estaciones
 (
     id              text not null constraint estaciones_pk primary key,
     nombre          text not null,
-    municipio_id    integer not null constraint estaciones_municipios_fk references municipios
+    municipio_id    integer not null constraint estaciones_municipios_fk references municipios,
+    latitud         double precision not null,
+    longitud        double precision not null,
+    constraint coordenadas_estacion_uk unique(latitud,longitud)
 );
 
 comment on table estaciones is 'Estaciones de Medición de Temperatura';
 comment on column estaciones.id is 'Id de la estación';
 comment on column estaciones.nombre is 'nombre de la estación';
 comment on column estaciones.municipio_id is 'Id del municipio donde está la estación';
+comment on column estaciones.latitud is 'Componente latitud de la coordenada geográfica de la estación';
+comment on column estaciones.longitud is 'Componente longitud de la coordenada geográfica de la estación';
 
 -- Tabla: Sensores
 create table sensores
@@ -254,6 +264,7 @@ create table observaciones
     estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
     sensor_id       text not null constraint observaciones_sensores_fk references sensores,
     valor           float not null,
+    unidad_medida   text not null,
     fecha           timestamp without time zone not null 
 );
 
@@ -261,6 +272,7 @@ comment on table observaciones is 'Observaciones de temperatura realizadas por l
 comment on column observaciones.id is 'Id de la observación';
 comment on column observaciones.estacion_id is 'Id de la estación que hizo la observación';
 comment on column observaciones.valor is 'valor de temperatura obtenido en la observación';
+comment on column observaciones.unidad_medida is 'unidad de medida de temperatura de la observación';
 comment on column observaciones.fecha is 'fecha en la que se realizó la la observación de temperatura';
 
 -- ===========================================
@@ -268,11 +280,12 @@ comment on column observaciones.fecha is 'fecha en la que se realizó la la obse
 -- ===========================================
 
 -- Departamentos
-insert into departamentos (nombre) values ('ANTIOQUIA');
+insert into departamentos (nombre)
+select distinct departamento
+from datos_temporales;
 
 -- Devolver el Id generado a la tabla provisional
 alter table datos_temporales add column departamento_id int default 1;
-alter table datos_temporales add column departamento text default 'ANTIOQUIA';
 
 -- Zonas 
 insert into zonas (nombre)
@@ -306,11 +319,13 @@ set municipio_id =
 where municipio_id is null;
 
 -- Estaciones
-insert into estaciones (id, nombre, municipio_id)
+insert into estaciones (id, nombre, municipio_id,latitud,longitud)
 select distinct
     codigoestacion,
     nombreestacion,
-    municipio_id
+    municipio_id,
+    replace(latitud,',','.')::double precision latitud,
+    replace(longitud,',','.')::double precision longitud
 from datos_temporales;
 
 -- Sensores
@@ -322,11 +337,12 @@ from datos_temporales;
 
 
 -- Observaciones:
-insert into observaciones (estacion_id, sensor_id, valor, fecha)
+insert into observaciones (estacion_id, sensor_id, valor, unidad_medida, fecha)
 select distinct
     codigoestacion,
     codigosensor,
     replace(valorobservado,',','.')::double precision valor_medicion,
+    UnidadMedida,
     to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM') fecha_medicion
 from datos_temporales
 order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codigoestacion;
@@ -408,7 +424,7 @@ outliers AS (
         o.estacion_id,
         e.nombre AS estacion_nombre,
         o.sensor_id,
-        s.nombre as sensor_nombre
+        s.nombre AS sensor_nombre,
         o.fecha,
         o.valor,
         est.promedio,
@@ -449,6 +465,81 @@ FROM outliers
 WHERE tipo_outlier IN ('Outlier bajo', 'Outlier alto')
     );
 
+-- ===========================================
+-- Validación de rangos de tiempo procesados
+-- ===========================================
+-- Crudos
+select
+    min(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima,
+    max(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima
+from datos_temporales
+
+-- Normalizados
+select
+    min(fecha) fecha_minima,
+    max(fecha) fecha_maxima
+from observaciones;
+
+
+
+-- ===========================================
+-- Consultas de exportacion de datos
+-- ===========================================
+
+-- Departamentos
+select id departamento_id,
+       nombre departamento_nombre
+from departamentos;
+
+-- Zonas
+select id zona_id,
+       nombre zona_nombre
+from zonas;
+
+-- Municipios
+select distinct
+    m.id municipio_id,
+    m.nombre municipio_nombre,
+    departamento_id,
+    d.nombre departamento_nombre,
+    zona_id,
+    z.nombre zona_nombre
+from municipios m
+    join departamentos d on m.departamento_id = d.id
+    join zonas z on m.zona_id = z.id
+order by municipio_nombre;
+
+-- Sensores
+select id sensor_id,
+       nombre sensor_nombre
+from sensores;
+
+-- Estaciones
+select
+    e.id estacion_id,
+    e.nombre estacion_nombre,
+    e.municipio_id,
+    m.nombre municipio_nombre,
+    e.latitud,
+    e.longitud
+from estaciones e join municipios m on e.municipio_id = m.id
+order by e.nombre;
+
+-- Observaciones
+select
+    o.id observacion_id,
+    o.estacion_id,
+    e.nombre estacion_nombre,
+    o.sensor_id,
+    s.nombre sensor_nombre,
+    o.valor observacion_valor,
+    o.unidad_medida,
+    o.fecha observacion_fecha
+from observaciones o
+    join estaciones e on o.estacion_id = e.id
+    join sensores s on o.sensor_id = s.id;
+
+
 
 -- ===========================================
 -- ZONA DE PELIGRO - BORRADO DE OBJETOS
@@ -462,7 +553,13 @@ drop view v_ubicacion_observacion;
 -- Borrado de tablas
 drop table observaciones;
 drop table estaciones;
+drop table sensores;
 drop table municipios;
 drop table zonas;
 drop table departamentos;
 drop table datos_temporales;
+
+drop sequence departamentos_id_seq;
+drop sequence municipios_id_seq;
+drop sequence observaciones_id_seq;
+drop sequence zonas_id_seq;

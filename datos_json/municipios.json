@@ -1,0 +1,298 @@
+[
+  {
+    "municipio_id": 31,
+    "municipio_nombre": "ABRIAQUÍ",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 4,
+    "zona_nombre": "ATRATO - DARIÉN"
+  },
+  {
+    "municipio_id": 19,
+    "municipio_nombre": "AMALFI",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 20,
+    "municipio_nombre": "ANGOSTURA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 21,
+    "municipio_nombre": "ANORÍ",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 9,
+    "municipio_nombre": "ARMENIA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 22,
+    "municipio_nombre": "BELLO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 23,
+    "municipio_nombre": "CALDAS",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 32,
+    "municipio_nombre": "CAÑASGORDAS",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 4,
+    "zona_nombre": "ATRATO - DARIÉN"
+  },
+  {
+    "municipio_id": 36,
+    "municipio_nombre": "CAREPA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 5,
+    "zona_nombre": "CARIBE - LITORAL"
+  },
+  {
+    "municipio_id": 33,
+    "municipio_nombre": "DABEIBA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 4,
+    "zona_nombre": "ATRATO - DARIÉN"
+  },
+  {
+    "municipio_id": 24,
+    "municipio_nombre": "EL BAGRE",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 25,
+    "municipio_nombre": "ENTRERRIOS",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 10,
+    "municipio_nombre": "FREDONIA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 34,
+    "municipio_nombre": "FRONTINO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 4,
+    "zona_nombre": "ATRATO - DARIÉN"
+  },
+  {
+    "municipio_id": 35,
+    "municipio_nombre": "GIRALDO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 4,
+    "zona_nombre": "ATRATO - DARIÉN"
+  },
+  {
+    "municipio_id": 11,
+    "municipio_nombre": "ITUANGO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 12,
+    "municipio_nombre": "JARDÍN",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 13,
+    "municipio_nombre": "LA UNIÓN",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 26,
+    "municipio_nombre": "MEDELLÍN",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 27,
+    "municipio_nombre": "NECHÍ",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 1,
+    "municipio_nombre": "REMEDIOS",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 2,
+    "municipio_nombre": "RETIRO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 3,
+    "municipio_nombre": "RIONEGRO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 4,
+    "municipio_nombre": "SAN CARLOS",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 5,
+    "municipio_nombre": "SAN ROQUE",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 14,
+    "municipio_nombre": "SANTA BÁRBARA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 15,
+    "municipio_nombre": "SANTA FE DE ANTIOQUIA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 28,
+    "municipio_nombre": "SANTA ROSA DE OSOS",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 29,
+    "municipio_nombre": "SANTO DOMINGO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 6,
+    "municipio_nombre": "SAN VICENTE",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 30,
+    "municipio_nombre": "SEGOVIA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 3,
+    "zona_nombre": "NECHÍ"
+  },
+  {
+    "municipio_id": 16,
+    "municipio_nombre": "SONSÓN",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 17,
+    "municipio_nombre": "TITIRIBÍ",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 37,
+    "municipio_nombre": "TURBO",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 5,
+    "zona_nombre": "CARIBE - LITORAL"
+  },
+  {
+    "municipio_id": 18,
+    "municipio_nombre": "VALDIVIA",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 2,
+    "zona_nombre": "CAUCA"
+  },
+  {
+    "municipio_id": 7,
+    "municipio_nombre": "VEGACHÍ",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  },
+  {
+    "municipio_id": 8,
+    "municipio_nombre": "YOLOMBÓ",
+    "departamento_id": 1,
+    "departamento_nombre": "ANTIOQUIA",
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
+  }
+]

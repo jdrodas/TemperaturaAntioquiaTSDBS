@@ -33,12 +33,6 @@ Table "estaciones" {
   "id" varchar(10) [pk, not null, note: 'Id de la estación']
   "nombre" varchar(100) [not null, note: 'nombre de la estación']
   "municipio_id" integer [not null, note: 'Id del municipio donde está la estación']
-  "latitud" float [not null, note: 'Latitud donde está ubicada la estación']
-  "longitud" float [not null, note: 'Longitud donde está ubicada la estación']
-
-  Indexes {
-    (latitud, longitud) [unique, name: "ubicacion_estacion_uk"]
-  }
   Note: 'Estaciones de Medición de Temperatura'
 }
 
