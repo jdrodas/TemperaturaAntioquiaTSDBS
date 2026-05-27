@@ -246,8 +246,6 @@ update datos_temporales
 set latitud = '6,2246389', longitud = '-75,588225'
 where codigoestacion = '0027015330';
 
-
-
 -- =====================================
 -- Creación de tablas del modelo
 -- =====================================
@@ -579,14 +577,10 @@ select
     o.id observacion_id,
     o.estacion_id,
     e.nombre estacion_nombre,
-    o.sensor_id,
-    s.nombre sensor_nombre,
     o.valor observacion_valor,
-    o.unidad_medida,
     o.fecha observacion_fecha
 from observaciones o
-    join estaciones e on o.estacion_id = e.id
-    join sensores s on o.sensor_id = s.id;
+    join estaciones e on o.estacion_id = e.id;
 
 
 
