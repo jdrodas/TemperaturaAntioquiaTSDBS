@@ -34,8 +34,8 @@ https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Datos-Hidrometeorol-gi
 Filtros aplicados:
 
 Departamento: Antioquia
-Rango fechas: Enero 1 de 2024, 12:00 am a Abril 30 2026, 11:58 pm.
-Total registros iniciales antes de control de calidad: -- Pendiente determinar
+Rango fechas: Abril 1 de 2024, 12:00 am a Abril 30 2026, 11:58 pm.
+Total registros iniciales antes de control de calidad: -- 1'483.120
 
 Importante:
 Los datos aqui expuestos son utilizados con fines académicos. 
@@ -183,6 +183,70 @@ create table datos_temporales
     UnidadMedida        text
 );
 
+-- ===========================================
+-- Depuración de inconsistencias en datos de
+-- estaciones
+-- ===========================================
+
+-- Unicidad de estaciones
+select distinct codigoestacion,
+                count(distinct nombreestacion) total_nombres
+from datos_temporales
+group by codigoestacion
+having count(distinct nombreestacion)>1;
+
+-- Estación con nombre duplicado: 0027015330
+select distinct codigoestacion,nombreestacion
+from datos_temporales
+where codigoestacion = '0027015330'
+order by codigoestacion;
+
+update datos_temporales
+set nombreestacion = 'AEROPUERTO OLAYA HERRERA'
+where codigoestacion = '0027015330';
+
+-- Unicidad de coordenadas geográficas
+select distinct
+    codigoestacion,
+    nombreestacion,
+    count(distinct latitud) total_latitudes
+from datos_temporales
+group by
+    codigoestacion,
+    nombreestacion
+having count(distinct latitud) > 1;
+
+select distinct
+    codigoestacion,
+    nombreestacion,
+    count(distinct longitud) total_longitudes
+from datos_temporales
+group by
+    codigoestacion,
+    nombreestacion
+having count(distinct longitud) > 1;
+
+/*
+Estaciones identificadas con problema de coordenadas:
+
+0023085270  AEROPUERTO J.M. CORDOVA
+0027015330  AEROPUERTO OLAYA HERRERA
+0026185020  MESOPOTAMIA
+*/
+
+update datos_temporales
+set latitud = '6,1686111', longitud = '-75,42611111'
+where codigoestacion = '0023085270';
+
+update datos_temporales
+set latitud = '5,88636111', longitud = '-75,31863889'
+where codigoestacion = '0026185020';
+
+update datos_temporales
+set latitud = '6,2246389', longitud = '-75,588225'
+where codigoestacion = '0027015330';
+
+
 
 -- =====================================
 -- Creación de tablas del modelo
@@ -245,26 +309,12 @@ comment on column estaciones.municipio_id is 'Id del municipio donde está la es
 comment on column estaciones.latitud is 'Componente latitud de la coordenada geográfica de la estación';
 comment on column estaciones.longitud is 'Componente longitud de la coordenada geográfica de la estación';
 
--- Tabla: Sensores
-create table sensores
-(
-    id              text not null constraint sensores_pk primary key,
-    nombre          text not null constraint nombre_sensor_uk unique
-);
-
-comment on table sensores is 'Sensores de medición de temperatura';
-comment on column sensores.id is 'Id del sensor';
-comment on column sensores.nombre is 'Nombre del sensor';
-
-
 -- Tabla: Observaciones
 create table observaciones
 (
     id              integer generated always as identity constraint observaciones_pk primary key,
     estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
-    sensor_id       text not null constraint observaciones_sensores_fk references sensores,
     valor           float not null,
-    unidad_medida   text not null,
     fecha           timestamp without time zone not null 
 );
 
@@ -272,7 +322,6 @@ comment on table observaciones is 'Observaciones de temperatura realizadas por l
 comment on column observaciones.id is 'Id de la observación';
 comment on column observaciones.estacion_id is 'Id de la estación que hizo la observación';
 comment on column observaciones.valor is 'valor de temperatura obtenido en la observación';
-comment on column observaciones.unidad_medida is 'unidad de medida de temperatura de la observación';
 comment on column observaciones.fecha is 'fecha en la que se realizó la la observación de temperatura';
 
 -- ===========================================
@@ -284,20 +333,34 @@ insert into departamentos (nombre)
 select distinct departamento
 from datos_temporales;
 
+-- Creación de indice
+create index idx_departamentos_lower_nombre ON departamentos (lower(nombre));
+
 -- Devolver el Id generado a la tabla provisional
-alter table datos_temporales add column departamento_id int default 1;
+alter table datos_temporales add column departamento_id int;
+
+update datos_temporales dt
+set departamento_id = d.id
+from departamentos d
+where dt.departamento_id is null
+and lower(d.nombre) = lower(dt.departamento);
 
 -- Zonas 
 insert into zonas (nombre)
 select distinct ZonaHidrografica from datos_temporales;
 
+-- Creación de indice
+create index idx_zonas_lower_nombre ON zonas (lower(nombre));
+
 -- Devolver el Id generado a la tabla provisional
 alter table datos_temporales add column zona_id int;
 
-update datos_temporales
-set zona_id =
-    (select distinct id from zonas where lower(nombre) = lower(ZonaHidrografica))
-where zona_id is null;
+update datos_temporales dt
+set zona_id = z.id
+from zonas z
+where dt.zona_id is null
+and lower(z.nombre) = lower(dt.ZonaHidrografica);
+
 
 -- Municipios
 insert into municipios (nombre, departamento_id, zona_id)
@@ -305,18 +368,21 @@ select distinct municipio, departamento_id, zona_id
 from datos_temporales
 order by zona_id, municipio;
 
+-- Creación de indice
+create index idx_municipios_lower_nombre ON municipios (lower(nombre));
+
 -- Devolver el Id generado a la tabla provisional
 alter table datos_temporales add column municipio_id int;
 
 -- Devolver el Id generado a la tabla provisional
-update datos_temporales dp
-set municipio_id =
-    (select distinct id
-     from municipios m
-     where lower(nombre) = lower(dp.municipio)
-     and m.zona_id = dp.zona_id
-     and m.departamento_id = dp.departamento_id)
-where municipio_id is null;
+update datos_temporales dt
+set municipio_id = m.id
+from municipios m
+where dt.municipio_id is null
+and m.zona_id = dt.zona_id
+and m.departamento_id = dt.departamento_id
+and lower(m.nombre) = lower(dt.municipio);
+
 
 -- Estaciones
 insert into estaciones (id, nombre, municipio_id,latitud,longitud)
@@ -328,53 +394,117 @@ select distinct
     replace(longitud,',','.')::double precision longitud
 from datos_temporales;
 
--- Sensores
-insert into sensores (id, nombre)
-select distinct 
-    codigoSensor,
-    descripcionSensor
-from datos_temporales;
-
-
 -- Observaciones:
-insert into observaciones (estacion_id, sensor_id, valor, unidad_medida, fecha)
+insert into observaciones (estacion_id, valor, fecha)
 select distinct
     codigoestacion,
-    codigosensor,
     replace(valorobservado,',','.')::double precision valor_medicion,
-    UnidadMedida,
     to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM') fecha_medicion
 from datos_temporales
 order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codigoestacion;
+
+-- ===========================================
+-- Validación de rangos de tiempo procesados
+-- ===========================================
+-- Crudos
+select
+    min(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima,
+    max(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima
+from datos_temporales;
+
+-- Normalizados
+select
+    min(fecha) fecha_minima,
+    max(fecha) fecha_maxima
+from observaciones;
+
+-- ==========================================================
+-- Validación de duplicados exactos eliminados al normalizar
+-- ==========================================================
+
+/*
+Antes de normalizar: 1'483.120 registros
+Después de normalizar: 1'238.343 registros
+
+Duplicados exactos eliminados: 244.777 registros
+*/
 
 
 -- ===========================================
 -- Creación de Vistas
 -- ===========================================
 
+create view v_info_departamentos as
+(
+    select distinct
+        d.id departamento_id,
+        d.nombre departamento_nombre,
+        count(distinct m.id) total_municipios,
+        count(distinct e.id) total_estaciones
+    from departamentos d
+        join municipios m on d.id = m.departamento_id
+        join estaciones e on m.id = e.municipio_id
+    group by
+        d.id,
+        d.nombre
+);
+
+-- vista: v_info_zonas
+create view v_info_zonas as
+(
+    select distinct
+        z.id zona_id,
+        z.nombre zona_nombre,
+            count(distinct m.id) total_municipios,
+            count(distinct e.id) total_estaciones
+    from zonas z
+            join municipios m on z.id = m.zona_id
+            join estaciones e on m.id = e.municipio_id
+    group by
+        z.id,
+        z.nombre
+);
+
+-- vista: v_info_estaciones
+create view v_info_estaciones as
+(
+    select distinct
+        e.id       estacion_id,
+        e.nombre   estacion_nombre,
+        e.latitud  estacion_latitud,
+        e.longitud estacion_longitud,
+        e.municipio_id,
+        m.nombre   municipio_nombre,
+        m.zona_id,
+        z.nombre   zona_nombre,
+        m.departamento_id,
+        d.nombre   departamento_nombre
+    from estaciones e
+    join municipios m on e.municipio_id = m.id
+    join zonas z on m.zona_id = z.id
+    join departamentos d on m.departamento_id = d.id
+);
+
 -- vista: v_info_observacion
 create or replace view v_info_observacion as
 (
     select distinct
         o.id observacion_id,
-        o.fecha,
-        o.valor,
+        o.fecha observacion_fecha,
+        o.valor observacion_valor,
         o.estacion_id,
         e.nombre estacion_nombre,
-        o.sensor_id,
-        s.nombre sensor_nombre,
         e.municipio_id,
         m.nombre municipio_nombre,
         m.zona_id,
-        zh.nombre zona_nombre,
+        z.nombre zona_nombre,
         m.departamento_id,
         d.nombre departamento_nombre
     from observaciones o
         inner join estaciones e on o.estacion_id = e.id
         inner join municipios m on e.municipio_id = m.id
-        inner join zonas zh on m.zona_id = zh.id
+        inner join zonas z on m.zona_id = z.id
         inner join departamentos d on m.departamento_id = d.id
-        inner join sensores s on o.sensor_id = s.id
 );
 
 -- vista: v_ubicacion_estacion
@@ -400,85 +530,9 @@ create or replace view v_ubicacion_estacion as
 -- Creación de Vistas Materializadas
 -- ===========================================
 
--- Materialized View: mv_estadisticas_outliers
-create materialized view mv_estadisticas_outliers as (
-WITH estadisticas_por_mes_estacion AS (
-    -- Calcula estadísticas por mes y estación
-    SELECT
-        estacion_id,
-        EXTRACT(MONTH FROM fecha) AS mes,
-        EXTRACT(YEAR FROM fecha) as año,
-        AVG(valor) AS promedio,
-        STDDEV(valor) AS desviacion_estandar,
-        MIN(valor) AS minimo,
-        MAX(valor) AS maximo,
-        PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY valor) AS q1,
-        PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY valor) AS q3
-    FROM observaciones
-    GROUP BY estacion_id, EXTRACT(MONTH FROM fecha), EXTRACT(YEAR FROM fecha)
-),
-outliers AS (
-    -- Identifica valores atípicos usando el método del rango intercuartílico (IQR)
-    SELECT
-        o.id observacion_id,
-        o.estacion_id,
-        e.nombre AS estacion_nombre,
-        o.sensor_id,
-        s.nombre AS sensor_nombre,
-        o.fecha,
-        o.valor,
-        est.promedio,
-        est.desviacion_estandar,
-        est.q1,
-        est.q3,
-        est.q3 - est.q1 AS iqr,
-        est.q1 - 1.5 * (est.q3 - est.q1) AS limite_inferior,
-        est.q3 + 1.5 * (est.q3 - est.q1) AS limite_superior,
-        CASE
-            WHEN o.valor < est.q1 - 1.5 * (est.q3 - est.q1) THEN 'Outlier bajo'
-            WHEN o.valor > est.q3 + 1.5 * (est.q3 - est.q1) THEN 'Outlier alto'
-            ELSE 'Normal'
-        END AS tipo_outlier
-    FROM observaciones o
-    JOIN estaciones e ON o.estacion_id = e.id
-    join sensores s on o.sensor_id = s.id
-    JOIN estadisticas_por_mes_estacion est ON
-        o.estacion_id = est.estacion_id AND
-        EXTRACT(MONTH FROM o.fecha) = est.mes
-)
-SELECT
-    observacion_id,
-    estacion_id,
-    estacion_nombre,
-    sensor_id,
-    sensor_nombre,
-    fecha,
-    valor,
-    tipo_outlier,
-    round(limite_inferior::numeric,3) limite_inferior,
-    round(promedio::numeric,3) promedio,
-    round(limite_superior::numeric,3) limite_superior,
-    round(q1::numeric,3) percentil_25,
-    round(q3::numeric,3) percentil_75,
-    round(desviacion_estandar::numeric,4) desviacion_estandar
-FROM outliers
-WHERE tipo_outlier IN ('Outlier bajo', 'Outlier alto')
-    );
 
--- ===========================================
--- Validación de rangos de tiempo procesados
--- ===========================================
--- Crudos
-select
-    min(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima,
-    max(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima
-from datos_temporales
 
--- Normalizados
-select
-    min(fecha) fecha_minima,
-    max(fecha) fecha_maxima
-from observaciones;
+
 
 
 
@@ -508,11 +562,6 @@ from municipios m
     join departamentos d on m.departamento_id = d.id
     join zonas z on m.zona_id = z.id
 order by municipio_nombre;
-
--- Sensores
-select id sensor_id,
-       nombre sensor_nombre
-from sensores;
 
 -- Estaciones
 select
