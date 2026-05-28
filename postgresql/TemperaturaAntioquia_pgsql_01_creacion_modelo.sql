@@ -300,6 +300,9 @@ create table estaciones
     constraint coordenadas_estacion_uk unique(latitud,longitud)
 );
 
+alter table estaciones add constraint estaciones_nombre_uk unique (nombre);
+create index idx_estaciones_lower_nombre ON estaciones (lower(nombre));
+
 comment on table estaciones is 'Estaciones de Medición de Temperatura';
 comment on column estaciones.id is 'Id de la estación';
 comment on column estaciones.nombre is 'nombre de la estación';

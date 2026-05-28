@@ -2,7 +2,7 @@
 -- Juan Dario Rodas - jdrodas@hotmail.com
 
 -- Proyecto: Analisis de Temperatura en Antioquia para el año 2024 y 2026
--- Motor de Base de datos: MongoDB 8.x
+-- Motor de Base de datos: MongoDB 8.3.x
 -- Version: NoSQL Orientada al documento
 
 -- ***********************************
@@ -13,7 +13,7 @@
 docker pull mongodb/mongodb-community-server
 
 -- Crear el contenedor
-docker run --name mongodb_tempAnt -e “MONGO_INITDB_ROOT_USERNAME=mongoadmin” -e MONGO_INITDB_ROOT_PASSWORD=unaClav3 -p 27017:27017 -d mongodb/mongodb-community-server:latest
+docker run --name tempAnt-mongodb -e “MONGO_INITDB_ROOT_USERNAME=mongoadmin” -e MONGO_INITDB_ROOT_PASSWORD=unaClav3 -p 27017:27017 -d mongodb/mongodb-community-server:latest
 
 -- ****************************************
 -- Creación de base de datos y usuarios
@@ -28,22 +28,22 @@ mongodb://mongoadmin:unaClav3@localhost:27017/
 db.version()
 
 -- crear la base de datos
-use tempantioquia_db;
+use tempant_db;
 
 -- Crear usuario para gestionar el modelo
 
 db.createUser({
-  user: "tempantioquia_app",
+  user: "tempant_usr",
   pwd: "unaClav3",  
   roles: [
-    { role: "readWrite", db: "tempantioquia_db" },
-    { role: "dbAdmin", db: "tempantioquia_db" }
+    { role: "readWrite", db: "tempant_db" },
+    { role: "dbAdmin", db: "tempant_db" }
   ],
     mechanisms: ["SCRAM-SHA-256"]
   }
 );
 
--- Con el usuario tempantioquia_app
+-- Con el usuario tempant_usr
 
 -- ****************************************
 --   Creación de Colecciones
@@ -54,7 +54,6 @@ db.createUser({
 db.createCollection("departamentos");
 db.createCollection("zonas");
 db.createCollection("municipios");
-db.createCollection("sensores");
 db.createCollection("estaciones");
 db.createCollection("observaciones");
 
@@ -81,7 +80,7 @@ nativos a MongoDB.
 
 -- Actualización de ObjectId del departamento para los municipios
 db.municipios.find().forEach(function(municipio){
-  let departamento = db.departamentos.findOne({"id":municipio.departamento_id});
+  let departamento = db.departamentos.findOne({"departamento_id":municipio.departamento_id});
 
   if (departamento){
     db.municipios.updateOne(
@@ -94,7 +93,7 @@ db.municipios.find().forEach(function(municipio){
 
 -- Actualización de ObjectId de la zona para los municipios
 db.municipios.find().forEach(function(municipio){
-  let zona = db.zonas.findOne({"id":municipio.zona_id});
+  let zona = db.zonas.findOne({"zona_id":municipio.zona_id});
 
   if (zona){
     db.municipios.updateOne(
@@ -107,7 +106,7 @@ db.municipios.find().forEach(function(municipio){
 
 -- Actualización de ObjectId del municipio para las estaciones
 db.estaciones.find().forEach(function(estacion){
-  let municipio = db.municipios.findOne({"id":estacion.municipio_id});
+  let municipio = db.municipios.findOne({"municipio_id":estacion.municipio_id});
 
   if (municipio){
     db.estaciones.updateOne(
@@ -118,37 +117,12 @@ db.estaciones.find().forEach(function(estacion){
 }
 );
 
--- Actualización del ObjectId del sensor para las observaciones
--- Usar UpdateOne con colecciones grandes es eeeeeeeteeeeeernooooooooooo.....
--- NO USAR ESTE a menos que tenga mucho tiempo para mirar un cursor parpadear! ;-)
-
--- db.observaciones.find().forEach(function(observacion){
---     let sensor = db.sensores.findOne({"id":observacion.sensor_id});
--- 
---     if(sensor){
---         db.observaciones.updateOne(
---             {_id:observacion._id},
---             {$set: {"sensor_id":sensor._id}}
---         );
---     }
--- });
-
--- Usar mejor UpdateMany
-db.sensores.find().forEach(function(sensor){
-    //Actualizar todas las mediciones asociadas a este sensor en una sola operación
-    db.observaciones.updateMany(
-        {"sensor_id":sensor.id},        // Filtro: Todas las mediciones con este código de sensor
-        {$set: {"sensor_id": sensor._id }}      // Actualización: Establecer el objectId del sensor
-    );
-}    
-);
-
 -- Actualización del ObjectId de la estación para las observaciones
 -- Usar mejor UpdateMany
 db.estaciones.find().forEach(function(estacion){
     //Actualizar todas las mediciones asociadas a esta estación en una sola operación
     db.observaciones.updateMany(
-        {"estacion_id":estacion.id},        // Filtro: Todas las mediciones con este código de estación
+        {"estacion_id":estacion.estacion_id},        // Filtro: Todas las mediciones con este código de estación
         {$set: {"estacion_id": estacion._id }}      // Actualización: Establecer el objectId de la estación
     );
 }    
@@ -157,28 +131,25 @@ db.estaciones.find().forEach(function(estacion){
 -- Actualización del campo fecha para pasar el tipo de dato de string a fecha
 db.observaciones.updateMany(
   {}, 
-  [{ $set: { fecha: { $toDate: "$fecha" } } }]
+  [{ $set: { observacion_fecha: { $toDate: "$observacion_fecha" } } }]
 );
 
 -- Retirar los campos temporales que ya no son necesarios
 
 -- En Observaciones, quitar los campos de código de sensor y código de estación
-db.observaciones.updateMany({}, { $unset: { id: "" } });
-
--- En sensores, quitar el campo codigo
-db.sensores.updateMany({}, { $unset: { id: "" } });
+db.observaciones.updateMany({}, { $unset: { observacion_id: "" } });
 
 -- En estaciones, quitar el campo codigo de municipio
-db.estaciones.updateMany({}, { $unset: { id: "" } });
+db.estaciones.updateMany({}, { $unset: { estacion_id: "" } });
 
 -- En municipios, quitar los campos de código de departamentos y zonas
-db.municipios.updateMany({}, { $unset: { id: "" } });
+db.municipios.updateMany({}, { $unset: { municipio_id: "" } });
 
 -- En zonas, quitar el campo codigo
-db.zonas.updateMany({}, { $unset: { id: "" } });
+db.zonas.updateMany({}, { $unset: { zona_id: "" } });
 
 -- En departamentos, quitar el campo codigo
-db.departamentos.updateMany({}, { $unset: { id: "" } });
+db.departamentos.updateMany({}, { $unset: { departamento_id: "" } });
 
 -- ************************************************
 -- Activación de validadores en las colecciones
@@ -193,13 +164,13 @@ db.runCommand({
             title: 'Los departamentos donde estarán ubicados los municipios',
             required: [
                 "_id",
-                "nombre"
+                "departamento_nombre"
             ],
             properties: {
                 _id: {
                     bsonType: 'objectId'
                 },
-                nombre: {
+                departamento_nombre: {
                     bsonType: 'string',
                     description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
                     minLength: 3
@@ -221,13 +192,13 @@ db.runCommand({
             title: 'Las zonas donde estarán ubicados los municipios',
             required: [
                 "_id",
-                "nombre"
+                "zona_nombre"
             ],
             properties: {
                 _id: {
                     bsonType: 'objectId'
                 },
-                nombre: {
+                zona_nombre: {
                     bsonType: 'string',
                     description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
                     minLength: 3
@@ -249,7 +220,7 @@ db.runCommand({
             title: 'Los municipios donde estarán ubicados las estaciones',
             required: [
                 "_id",
-                "nombre",
+                "municipio_nombre",
                 "zona_id",
                 "zona_nombre",
                 "departamento_id",
@@ -259,7 +230,7 @@ db.runCommand({
                 _id: {
                     bsonType: 'objectId'
                 },
-                nombre: {
+                municipio_nombre: {
                     bsonType: 'string',
                     description: '\'nombre\' Debe ser una cadena de caracteres y no puede ser nulo',
                     minLength: 3
@@ -290,33 +261,7 @@ db.runCommand({
   validationAction: "error"
 });
 
--- Para la colección sensores
-db.runCommand({
-  collMod: "sensores",
-        validator: {
-            $jsonSchema: {
-                bsonType: 'object',
-                title: 'Los sensores donde que se utilizarán para las observaciones',
-                required: [
-                    "_id",
-                    "nombre"
-                ],
-                properties: {
-                    _id: {
-                        bsonType: 'objectId'
-                    },
-                    nombre: {
-                        bsonType: 'string',
-                        description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
-                        minLength: 3
-                    }
-                },
-                additionalProperties: false
-            }
-        },
-  validationLevel: "strict",
-  validationAction: "error"
-});
+
 
 -- Para la colección estaciones
 db.runCommand({
@@ -327,7 +272,7 @@ db.runCommand({
                 title: 'Las estaciones donde que se realizarán las observaciones',
                 required: [
                     "_id",
-                    "nombre",
+                    "estacion_nombre",
                     "latitud",
                     "longitud",
                     "municipio_id",
@@ -337,7 +282,7 @@ db.runCommand({
                     _id: {
                         bsonType: 'objectId'
                     },
-                    nombre: {
+                    estacion_nombre: {
                         bsonType: 'string',
                         description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
                         minLength: 3
@@ -380,30 +325,22 @@ db.runCommand({
             title: 'Las observaciones realizadas por los sensores ubicados en las estaciones',
             required: [
                 "_id",
-                "valor",
-                "unidad_medida",                
-                "fecha",
+                "osbservacion_valor",              
+                "osbservacion_fecha",
                 "estacion_id",                
-                "estacion_nombre",
-                "sensor_id",                
-                "sensor_nombre",
+                "estacion_nombre"
             ],
             properties: {
                 _id: {
                     bsonType: 'objectId'
                 },
-                valor: {
+                osbservacion_valor: {
                     bsonType: "number",
-                    minimum:-100,
-                    maximum: 200,
-                    description: "'valor' Debe ser un numero real entre -50 y 150"
-                },
-                unidad_medida: {
-                    bsonType: "string",
-                    description: "'unidad_medida' Debe ser una cadena de caracteres y no puede ser nulo",
-                    minLength: 2
+                    minimum:-50,
+                    maximum: 60,
+                    description: "'valor' Debe ser un numero real entre -50 y 60"
                 },  
-                fecha: {
+                osbservacion_fecha: {
                     bsonType: "date",
                     description: "'fecha' corresponde a la fecha y hora de la medición"
                 },
@@ -415,15 +352,6 @@ db.runCommand({
                   bsonType: 'string',
                   description: '\'estacion_nombre\' Debe ser una cadena de caracteres y no puede ser nulo',
                   minLength: 3
-                }, 
-                sensor_id: {
-                    bsonType: ['objectId','string'],
-                    description: '\'sensor_id\' Es el ObjectId del sensor'
-                }, 
-                sensor_nombre: {
-                    bsonType: 'string',
-                    description: "'sensor_nombre' Debe ser una cadena de caracteres y no puede ser nulo",
-                    minLength: 3
                 } 
             },
             additionalProperties: false  
@@ -460,9 +388,7 @@ db.observaciones.aggregate([
       unidad_medida: 1,
       metadata: {
         estacion_id: "$estacion_id",
-        estacion_nombre: "$estacion_nombre", 
-        sensor_id: "$sensor_id",
-        sensor_nombre: "$sensor_nombre"
+        estacion_nombre: "$estacion_nombre"
       }
     }
   },
@@ -485,8 +411,4 @@ db.municipios.drop();
 db.departamentos.drop();
 db.zonas.drop();
 
-
--- ****************************************
---   Zona de pruebas
--- ****************************************
 

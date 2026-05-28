@@ -11,7 +11,7 @@
 -- ***********************************
 
 -- Descargar la imagen
-docker pull timescale/timescaledb:latest-pg17
+docker pull timescale/timescaledb:latest-pg18
 
 -- Crear el contenedor
 docker run --name tempant_timescaledb -e POSTGRES_PASSWORD=unaClav3 -d -p 5432:5432 timescale/timescaledb:latest-pg17
