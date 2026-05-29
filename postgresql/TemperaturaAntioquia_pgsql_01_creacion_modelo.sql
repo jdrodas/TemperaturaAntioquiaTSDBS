@@ -325,6 +325,9 @@ comment on column observaciones.estacion_id is 'Id de la estación que hizo la o
 comment on column observaciones.valor is 'valor de temperatura obtenido en la observación';
 comment on column observaciones.fecha is 'fecha en la que se realizó la la observación de temperatura';
 
+create index concurrently idx_obs_estacion_sensor_fecha
+    ON observaciones (estacion_id, fecha);
+
 -- ===========================================
 -- Cargue de datos desde la tabla provisional 
 -- ===========================================
@@ -531,7 +534,137 @@ create or replace view v_ubicacion_estacion as
 -- Creación de Vistas Materializadas
 -- ===========================================
 
+-- Vista: mv_inventario_geografico
+create materialized view mv_inventario_geografico as
+select
+    e.id estacion_id,
+    e.nombre estacion_nombre,
+    e.latitud estacion_latitud,
+    e.longitud estacion_longitud,
+    m.id municipio_id,
+    m.nombre municipio_nombre,
+    z.id zona_id,
+    z.nombre zona_nombre,
+    d.id departamento_id,
+    d.nombre departamento
+from estaciones    e
+join municipios    m on e.municipio_id     = m.id
+join zonas         z on m.zona_id          = z.id
+join departamentos d on m.departamento_id  = d.id;
 
+create unique index idx_mv_inventario_geografico_estacion_id
+    on mv_inventario_geografico (estacion_id);
+
+create index idx_mv_inventario_geografico_municipio_id
+    on mv_inventario_geografico (municipio_id);
+
+create index idx_mv_inventario_geografico_departamento
+    on mv_inventario_geografico (departamento);
+
+create index idx_mv_inventario_geografico_zona
+    on mv_inventario_geografico (zona_nombre);
+
+-- vista: mv_resumen_diario
+create materialized view mv_resumen_diario as
+select
+    o.estacion_id,
+    o.fecha::date dia,
+    COUNT(*) num_observaciones,
+    MIN(o.valor) temp_minima,
+    MAX(o.valor) temp_maxima,
+    AVG(o.valor) temp_promedio,
+    STDDEV(o.valor) temp_stddev,
+    PERCENTILE_CONT(0.25) within group (order by o.valor)  percentil_25,
+    PERCENTILE_CONT(0.50) within group (order by o.valor)  mediana,
+    PERCENTILE_CONT(0.75) within group (order by o.valor)  percentil_75,
+    MIN(o.fecha) primera_obs_dia,
+    MAX(o.fecha) ultima_obs_dia
+FROM observaciones o
+GROUP BY o.estacion_id, o.fecha::date;
+
+create unique index idx_mv_resumen_diario_unique
+    on mv_resumen_diario (estacion_id, dia);
+
+create index idx_mv_resumen_diario_dia
+    on mv_resumen_diario (dia);
+
+create index idx_mv_resumen_diario_estacion_dia
+    on mv_resumen_diario (estacion_id, dia);
+
+
+-- vista: mv_resumen_mensual
+create materialized view mv_resumen_mensual as
+select
+    DATE_TRUNC('month', dia)  mes,
+    estacion_id,
+    dia,
+    SUM(num_observaciones)   num_observaciones,
+    MIN(temp_minima)         temp_minima,
+    MAX(temp_maxima)         temp_maxima,
+    ROUND(AVG(temp_promedio)::numeric, 4)  temp_promedio,
+    ROUND(AVG(temp_stddev)::numeric, 4)    temp_stddev,
+    ROUND(AVG(percentil_25)::numeric, 4)   percentil_25,
+    ROUND(AVG(mediana)::numeric, 4)        mediana,
+    ROUND(AVG(percentil_75)::numeric, 4)   percentil_75,
+    COUNT(DISTINCT dia)                    dias_con_datos
+from mv_resumen_diario
+group by DATE_TRUNC('month', dia), estacion_id, dia;
+
+create unique index idx_mv_resumen_mensual_unique
+    on mv_resumen_mensual (estacion_id, mes,dia);
+
+create index idx_mv_resumen_mensual_mes
+    on mv_resumen_mensual (mes);
+
+create index idx_mv_resumen_mensual_estacion_mes
+    on mv_resumen_mensual (estacion_id, mes);
+
+
+-- vista: mv_intervalos
+create materialized view mv_intervalos as
+with obs_ordenadas as (
+    select
+        estacion_id,
+        fecha,
+        LAG(fecha) over (
+            partition by estacion_id
+            order by fecha
+        ) as fecha_anterior
+    from observaciones
+)
+select
+    estacion_id,
+    fecha_anterior intervalo_inicio,
+    fecha intervalo_fin,
+    EXTRACT(EPOCH from (fecha - fecha_anterior)) / 60.0 intervalo_minutos,
+    EXTRACT(EPOCH from (fecha - fecha_anterior)) / 3600.0 intervalo_horas
+from obs_ordenadas
+where fecha_anterior is not null;
+
+create index idx_mv_intervalos_estacion_inicio
+    on mv_intervalos (estacion_id, intervalo_inicio);
+
+create index idx_mv_intervalos_horas
+    on mv_intervalos (intervalo_horas);
+
+
+-- Vista: mv_gaps_por_estacion
+create materialized view mv_gaps_por_estacion as
+select
+    estacion_id,
+    COUNT(*) num_gaps,
+    MIN(intervalo_horas) gap_minimo_horas,
+    MAX(intervalo_horas) gap_maximo_horas,
+    ROUND(
+        AVG(intervalo_horas)::numeric, 2) gap_promedio_horas,
+    ROUND(SUM(intervalo_horas)::numeric, 2) total_horas_perdidas
+from mv_intervalos
+where intervalo_horas > 3
+group by estacion_id;
+
+
+create unique index idx_mv_gaps_por_estacion_unique
+    ON mv_gaps_por_estacion (estacion_id);
 
 
 
