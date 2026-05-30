@@ -407,6 +407,18 @@ select distinct
 from datos_temporales
 order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codigoestacion;
 
+
+-- Agregar columna calculada persistida fecha_dia generada a partir de la fecha
+alter table observaciones 
+    add column fecha_dia date generated always as (fecha::date) stored;
+
+create index idx_obs_estacion_sensor_fecha_dia
+    on observaciones (estacion_id, fecha_dia);
+
+create index concurrently idx_obs_fecha_dia
+    ON observaciones (fecha_dia);    
+
+
 -- ===========================================
 -- Validación de rangos de tiempo procesados
 -- ===========================================
@@ -568,7 +580,7 @@ create index idx_mv_inventario_geografico_zona
 create materialized view mv_resumen_diario as
 select
     o.estacion_id,
-    o.fecha::date dia,
+    o.fecha_dia dia,
     COUNT(*) num_observaciones,
     MIN(o.valor) temp_minima,
     MAX(o.valor) temp_maxima,
@@ -580,7 +592,7 @@ select
     MIN(o.fecha) primera_obs_dia,
     MAX(o.fecha) ultima_obs_dia
 FROM observaciones o
-GROUP BY o.estacion_id, o.fecha::date;
+GROUP BY o.estacion_id, o.fecha_dia;
 
 create unique index idx_mv_resumen_diario_unique
     on mv_resumen_diario (estacion_id, dia);
@@ -662,12 +674,30 @@ from mv_intervalos
 where intervalo_horas > 3
 group by estacion_id;
 
-
 create unique index idx_mv_gaps_por_estacion_unique
-    ON mv_gaps_por_estacion (estacion_id);
+    on mv_gaps_por_estacion (estacion_id);
 
 
+-- vista: mv_stats_iqr
+create materialized view mv_stats_iqr as
+select
+    estacion_id,
+    COUNT(distinct dia) dias_analizados,
+    AVG(temp_promedio)  media,
+    STDDEV(temp_promedio) desviacion,
+    MIN(temp_minima)      temp_minima,
+    MAX(temp_maxima)      temp_maxima,
+    PERCENTILE_CONT(0.25) within group (order by temp_promedio) percentil_25,
+    PERCENTILE_CONT(0.50) within group (order by temp_promedio) mediana,
+    PERCENTILE_CONT(0.75) within group (order by temp_promedio) percentil_75,
+    PERCENTILE_CONT(0.75) within group (order by temp_promedio) -
+    PERCENTILE_CONT(0.25) within group (order by temp_promedio) iqr
+from mv_resumen_diario
+group by estacion_id;
 
+-- Índice único requerido para REFRESH CONCURRENTLY
+create unique index idx_mv_stats_iqr_unique
+    on mv_stats_iqr (estacion_id);
 
 
 -- ===========================================
@@ -717,6 +747,58 @@ select
     o.fecha observacion_fecha
 from observaciones o
     join estaciones e on o.estacion_id = e.id;
+
+
+-- =====================================================
+-- AUTOMATIZACIÒN DE REFRESCO DE VISTAS MATERIALIZADAS
+-- =====================================================
+
+create extension if not exists pg_cron;
+
+-- mv_resumen_diario
+SELECT cron.schedule(
+    'refresh_mv_resumen_diario',
+    '0 2 * * *',
+    'REFRESH MATERIALIZED VIEW CONCURRENTLY mv_resumen_diario'
+);
+
+-- mv_resumen_mensual
+SELECT cron.schedule(
+    'refresh_mv_resumen_mensual',
+    '30 2 * * *',
+    'REFRESH MATERIALIZED VIEW CONCURRENTLY mv_resumen_mensual'
+);
+
+-- mv_stats_iqr
+SELECT cron.schedule(
+    'refresh_mv_stats_iqr',
+    '45 2 * * *',
+    'REFRESH MATERIALIZED VIEW CONCURRENTLY mv_stats_iqr'
+);
+
+--  mv_intervalos
+SELECT cron.schedule(
+    'refresh_mv_intervalos',
+    '0 3 * * *',
+    'REFRESH MATERIALIZED VIEW CONCURRENTLY mv_intervalos'
+);
+
+-- mv_gaps_por_estacion
+SELECT cron.schedule(
+    'refresh_mv_gaps_por_estacion',
+    '30 3 * * *',
+    'REFRESH MATERIALIZED VIEW CONCURRENTLY mv_gaps_por_estacion'
+);
+
+-- Verificar jobs registrados
+SELECT
+    jobid,
+    jobname,
+    schedule,
+    command,
+    active
+FROM cron.job
+ORDER BY jobid;
 
 
 
