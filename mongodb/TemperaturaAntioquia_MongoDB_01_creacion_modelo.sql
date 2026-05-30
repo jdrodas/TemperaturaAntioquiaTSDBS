@@ -64,7 +64,6 @@ db.createCollection("observaciones");
 -- departamentos.json
 -- zonas.json
 -- municipios.json
--- sensores.json
 -- estaciones.json
 -- observaciones.json
 
@@ -369,7 +368,7 @@ db.runCommand({
 -- Crear la colección mediciones como time series enabled
 db.createCollection("mediciones", {
   timeseries: {
-    timeField: "fecha",
+    timeField: "observacion_fecha",
     metaField: "metadata",
     granularity: "minutes"
   }
@@ -383,9 +382,8 @@ db.mediciones.deleteMany({});
 db.observaciones.aggregate([
   {
     $project: {
-      fecha: 1,
-      valor: 1,
-      unidad_medida: 1,
+      observacion_fecha: 1,
+      observacion_valor: 1,
       metadata: {
         estacion_id: "$estacion_id",
         estacion_nombre: "$estacion_nombre"

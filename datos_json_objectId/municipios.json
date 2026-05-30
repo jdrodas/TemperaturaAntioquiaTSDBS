@@ -1,0 +1,518 @@
+[{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbada"
+  },
+  "municipio_nombre": "ABRIAQUÍ",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa048"
+  },
+  "zona_nombre": "ATRATO - DARIÉN"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbadb"
+  },
+  "municipio_nombre": "AMALFI",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbadc"
+  },
+  "municipio_nombre": "ANGOSTURA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbadd"
+  },
+  "municipio_nombre": "ANORÍ",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbade"
+  },
+  "municipio_nombre": "ARMENIA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbadf"
+  },
+  "municipio_nombre": "BELLO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae0"
+  },
+  "municipio_nombre": "CALDAS",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae1"
+  },
+  "municipio_nombre": "CAÑASGORDAS",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa048"
+  },
+  "zona_nombre": "ATRATO - DARIÉN"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae2"
+  },
+  "municipio_nombre": "CAREPA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa049"
+  },
+  "zona_nombre": "CARIBE - LITORAL"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae3"
+  },
+  "municipio_nombre": "DABEIBA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa048"
+  },
+  "zona_nombre": "ATRATO - DARIÉN"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae4"
+  },
+  "municipio_nombre": "EL BAGRE",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae5"
+  },
+  "municipio_nombre": "ENTRERRIOS",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae6"
+  },
+  "municipio_nombre": "FREDONIA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae7"
+  },
+  "municipio_nombre": "FRONTINO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa048"
+  },
+  "zona_nombre": "ATRATO - DARIÉN"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae8"
+  },
+  "municipio_nombre": "GIRALDO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa048"
+  },
+  "zona_nombre": "ATRATO - DARIÉN"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbae9"
+  },
+  "municipio_nombre": "ITUANGO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaea"
+  },
+  "municipio_nombre": "JARDÍN",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaeb"
+  },
+  "municipio_nombre": "LA UNIÓN",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaec"
+  },
+  "municipio_nombre": "MEDELLÍN",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaed"
+  },
+  "municipio_nombre": "NECHÍ",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaee"
+  },
+  "municipio_nombre": "REMEDIOS",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaef"
+  },
+  "municipio_nombre": "RETIRO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf0"
+  },
+  "municipio_nombre": "RIONEGRO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf1"
+  },
+  "municipio_nombre": "SAN CARLOS",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf2"
+  },
+  "municipio_nombre": "SAN ROQUE",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf3"
+  },
+  "municipio_nombre": "SANTA BÁRBARA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf4"
+  },
+  "municipio_nombre": "SANTA FE DE ANTIOQUIA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf5"
+  },
+  "municipio_nombre": "SANTA ROSA DE OSOS",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf6"
+  },
+  "municipio_nombre": "SANTO DOMINGO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf7"
+  },
+  "municipio_nombre": "SAN VICENTE",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf8"
+  },
+  "municipio_nombre": "SEGOVIA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04c"
+  },
+  "zona_nombre": "NECHÍ"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbaf9"
+  },
+  "municipio_nombre": "SONSÓN",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbafa"
+  },
+  "municipio_nombre": "TITIRIBÍ",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbafb"
+  },
+  "municipio_nombre": "TURBO",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa049"
+  },
+  "zona_nombre": "CARIBE - LITORAL"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbafc"
+  },
+  "municipio_nombre": "VALDIVIA",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04a"
+  },
+  "zona_nombre": "CAUCA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbafd"
+  },
+  "municipio_nombre": "VEGACHÍ",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+},
+{
+  "_id": {
+    "$oid": "6a1ae5fb8fcafc10d9ecbafe"
+  },
+  "municipio_nombre": "YOLOMBÓ",
+  "departamento_id": {
+    "$oid": "6a1ae5e88fcafc10d9ecbaaa"
+  },
+  "departamento_nombre": "ANTIOQUIA",
+  "zona_id": {
+    "$oid": "6a1ae72f8fcafc10d9ffa04b"
+  },
+  "zona_nombre": "MEDIO MAGDALENA"
+}]

@@ -412,7 +412,7 @@ order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codi
 alter table observaciones 
     add column fecha_dia date generated always as (fecha::date) stored;
 
-create index idx_obs_estacion_sensor_fecha_dia
+create index idx_obs_estacion_fecha_dia
     on observaciones (estacion_id, fecha_dia);
 
 create index concurrently idx_obs_fecha_dia

@@ -22,8 +22,7 @@ db.observaciones.aggregate([
     $group: {
       _id: {
         estacion_id: "$estacion_id",
-        sensor_id: "$sensor_id", 
-        fecha: "$fecha"
+        fecha: "$observacion_fecha"
       },
       valores_distintos: { $addToSet: "$valor" },
       total_duplicados: { $sum: 1 }
@@ -38,8 +37,7 @@ db.observaciones.aggregate([
     $project: {
       _id: 0,
       estacion_id: "$_id.estacion_id",
-      sensor_id: "$_id.sensor_id",
-      fecha: "$_id.fecha",
+      fecha: "$_id.observacion_fecha",
       valores_distintos: 1,
       total_duplicados: 1,
       rango_valores: {
@@ -64,9 +62,9 @@ db.observaciones.aggregate([
     {
         $group: {
         _id: {
-            año: { $year: "$fecha" },
-            mes: { $month: "$fecha" },
-            dia: { $dayOfMonth: "$fecha" }
+            año: { $year: "$observacion_fecha" },
+            mes: { $month: "$observacion_fecha" },
+            dia: { $dayOfMonth: "$observacion_fecha" }
         }
         }
     },
@@ -113,7 +111,8 @@ db.observaciones.aggregate([
         }
     },
     {
-        $sort: { mes: 1 }
+        $sort: { año: 1,
+                  mes: 1 }
     }
     ]);
 
@@ -126,7 +125,7 @@ db.observaciones.aggregate([
 db.observaciones.aggregate([
   {
     $project: {
-      hora: { $hour: "$fecha" }
+      hora: { $hour: "$observacion_fecha" }
     }
   },
   {
@@ -183,7 +182,7 @@ db.observaciones.aggregate([
     $group: {
       _id: "$estacion_id",
       estacion_nombre: { $first: "$estacion_nombre" },
-      observaciones: { $push: "$fecha" },
+      observaciones: { $push: "$observacion_fecha" },
       total_observaciones: { $sum: 1 }
     }
   },
@@ -235,7 +234,7 @@ db.observaciones.aggregate([
 db.mediciones.aggregate([
   {
     $match: {
-      fecha: {
+      observacion_fecha: {
         $gte: ISODate("2025-05-01T00:00:00.000Z"),
         $lt: ISODate("2025-06-01T00:00:00.000Z")
       }
@@ -244,7 +243,7 @@ db.mediciones.aggregate([
   {
     $group: {
       _id: "$metadata.estacion_nombre",
-      temperatura_promedio: { $avg: "$valor" },
+      temperatura_promedio: { $avg: "$observacion_valor" },
       total_mediciones: { $sum: 1 },
       estacion_id: { $first: "$metadata.estacion_id" }
     }
