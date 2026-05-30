@@ -324,8 +324,8 @@ db.runCommand({
             title: 'Las observaciones realizadas por los sensores ubicados en las estaciones',
             required: [
                 "_id",
-                "osbservacion_valor",              
-                "osbservacion_fecha",
+                "observacion_valor",              
+                "observacion_fecha",
                 "estacion_id",                
                 "estacion_nombre"
             ],
@@ -333,13 +333,13 @@ db.runCommand({
                 _id: {
                     bsonType: 'objectId'
                 },
-                osbservacion_valor: {
+                observacion_valor: {
                     bsonType: "number",
                     minimum:-50,
                     maximum: 60,
                     description: "'valor' Debe ser un numero real entre -50 y 60"
                 },  
-                osbservacion_fecha: {
+                observacion_fecha: {
                     bsonType: "date",
                     description: "'fecha' corresponde a la fecha y hora de la medición"
                 },
@@ -392,6 +392,197 @@ db.observaciones.aggregate([
   },
   { $out: "mediciones" }
 ], { allowDiskUse: true });
+
+
+-- ***********************************************
+--   Creación de colecciones con Schema Validator
+--   Usar solo si no se hizo previamente 
+-- ***********************************************
+
+db.createCollection("departamentos",{
+validator: {
+        $jsonSchema: {
+            bsonType: 'object',
+            title: 'Los departamentos donde estarán ubicados los municipios',
+            required: [
+                "_id",
+                "departamento_nombre"
+            ],
+            properties: {
+                _id: {
+                    bsonType: 'objectId'
+                },
+                departamento_nombre: {
+                    bsonType: 'string',
+                    description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
+                    minLength: 3
+                }
+            },
+            additionalProperties: false
+        }
+  }
+}
+);
+
+db.createCollection("zonas",{
+  validator: {
+        $jsonSchema: {
+            bsonType: 'object',
+            title: 'Las zonas donde estarán ubicados los municipios',
+            required: [
+                "_id",
+                "zona_nombre"
+            ],
+            properties: {
+                _id: {
+                    bsonType: 'objectId'
+                },
+                zona_nombre: {
+                    bsonType: 'string',
+                    description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
+                    minLength: 3
+                }
+            },
+            additionalProperties: false            
+        }
+    }
+});
+
+db.createCollection("municipios",{
+    validator: {
+        $jsonSchema: {
+            bsonType: 'object',
+            title: 'Los municipios donde estarán ubicados las estaciones',
+            required: [
+                "_id",
+                "municipio_nombre",
+                "zona_id",
+                "zona_nombre",
+                "departamento_id",
+                "departamento_nombre"
+            ],
+            properties: {
+                _id: {
+                    bsonType: 'objectId'
+                },
+                municipio_nombre: {
+                    bsonType: 'string',
+                    description: '\'nombre\' Debe ser una cadena de caracteres y no puede ser nulo',
+                    minLength: 3
+                },
+                zona_id: {
+                    bsonType: ['objectId','string'],
+                    description: '\'zona_id\' Es el ObjectId de la zona'
+                },
+                zona_nombre: {
+                    bsonType: 'string',
+                    description: '\'zona_nombre\' Debe ser una cadena de caracteres y no puede ser nulo',
+                    minLength: 3
+                },
+                departamento_id: {
+                    bsonType: ['objectId','string'],
+                    description: '\'zona_id\' Es el ObjectId del departamento'
+                },            
+                departamento_nombre: {
+                    bsonType: 'string',
+                    description: '\'zona_nombre\' Debe ser una cadena de caracteres y no puede ser nulo',
+                    minLength: 3
+                },                
+            },
+            additionalProperties: false  
+        }
+    }
+});
+
+db.createCollection("estaciones",{
+    validator: {
+            $jsonSchema: {
+                bsonType: 'object',
+                title: 'Las estaciones donde que se realizarán las observaciones',
+                required: [
+                    "_id",
+                    "estacion_nombre",
+                    "latitud",
+                    "longitud",
+                    "municipio_id",
+                    "municipio_nombre"
+                ],
+                properties: {
+                    _id: {
+                        bsonType: 'objectId'
+                    },
+                    estacion_nombre: {
+                        bsonType: 'string',
+                        description: "'nombre' Debe ser una cadena de caracteres y no puede ser nulo",
+                        minLength: 3
+                    },                  
+                    latitud: {
+                      bsonType: "number",
+                      minimum:-90,
+                      maximum:90,
+                      description: "'latitud' Debe ser un numero real entre -90 y 90"
+                    },
+                    longitud: {
+                      bsonType: "number",
+                      minimum:-180,
+                      maximum:180,
+                      description: "'longitud' Debe ser un numero real entre -180 y 180"
+                    },
+                    municipio_id: {
+                        bsonType: ['objectId','string'],
+                        description: '\'zona_id\' Es el ObjectId del municipio'
+                    }, 
+                    municipio_nombre: {
+                        bsonType: 'string',
+                        description: "'municipio_nombre' Debe ser una cadena de caracteres y no puede ser nulo",
+                        minLength: 3
+                    }                      
+                },
+                additionalProperties: false  
+            }
+        }
+});
+
+db.createCollection("observaciones",{
+    validator: {
+        $jsonSchema: {
+            bsonType: 'object',
+            title: 'Las observaciones realizadas por los sensores ubicados en las estaciones',
+            required: [
+                "_id",
+                "observacion_valor",              
+                "observacion_fecha",
+                "estacion_id",                
+                "estacion_nombre"
+            ],
+            properties: {
+                _id: {
+                    bsonType: 'objectId'
+                },
+                observacion_valor: {
+                    bsonType: "number",
+                    minimum:-50,
+                    maximum: 60,
+                    description: "'valor' Debe ser un numero real entre -50 y 60"
+                },  
+                observacion_fecha: {
+                    bsonType: "date",
+                    description: "'fecha' corresponde a la fecha y hora de la medición"
+                },
+                estacion_id: {
+                    bsonType: ['objectId','string'],
+                    description: '\'estacion_id\' Es el ObjectId de la estación'
+                }, 
+                estacion_nombre: {
+                  bsonType: 'string',
+                  description: '\'estacion_nombre\' Debe ser una cadena de caracteres y no puede ser nulo',
+                  minLength: 3
+                } 
+            },
+            additionalProperties: false  
+          }
+      }
+});
 
 -- ****************************************
 --   Zona de peligro

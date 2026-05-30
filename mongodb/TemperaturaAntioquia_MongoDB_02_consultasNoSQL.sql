@@ -9,287 +9,175 @@
 -- *******************************************************
 
 -- ********************************************************
--- Superbásicas:
+-- básicas:
 -- ********************************************************
 
--- ------------------------------------------------------------------------------------------
--- ¿Hay datos duplicados por estación, sensor y fecha con valores distintos?
--- R/. Esta consulta no debe arrojar resultados
--- ------------------------------------------------------------------------------------------
+
+/*
+¿Cuál fue la temperatura promedio, máxima y mínima registrada 
+en cada estación durante el mes de julio de 2025?
+*/
 
 db.observaciones.aggregate([
   {
+    // 1. Filtrar los documentos por el rango de fechas (Mes de Julio 2025)
+    $match: {
+      observacion_fecha: {
+        $gte: ISODate("2025-07-01T00:00:00Z"),
+        $lt: ISODate("2025-08-01T00:00:00Z")
+      }
+    }
+  },
+  {
+    // 2. Agrupar por estación y calcular las métricas requeridas
     $group: {
       _id: {
         estacion_id: "$estacion_id",
-        fecha: "$observacion_fecha"
+        estacion_nombre: "$estacion_nombre"
       },
-      valores_distintos: { $addToSet: "$valor" },
-      total_duplicados: { $sum: 1 }
+      temperatura_promedio: { $avg: "$observacion_valor" },
+      temperatura_maxima: { $max: "$observacion_valor" },
+      temperatura_minima: { $min: "$observacion_valor" }
     }
   },
   {
-    $match: {
-      total_duplicados: { $gt: 1 }
-    }
-  },
-  {
+    // 3. Proyectar la salida para que sea limpia y fácil de leer
     $project: {
       _id: 0,
       estacion_id: "$_id.estacion_id",
-      fecha: "$_id.observacion_fecha",
-      valores_distintos: 1,
-      total_duplicados: 1,
-      rango_valores: {
-        $subtract: [
-          { $max: "$valores_distintos" },
-          { $min: "$valores_distintos" }
-        ]
-      }
+      estacion_nombre: "$_id.estacion_nombre",
+      temperatura_promedio: 1,
+      temperatura_maxima: 1,
+      temperatura_minima: 1
     }
-  },
-  {
-    $sort: { rango_valores: -1 }
   }
 ]);
 
 
--- ------------------------------------------------------------------------------------------
--- ¿Hay días sin observaciones por estación?
--- R/. Esta consulta no debe arrojar resultados
--- ------------------------------------------------------------------------------------------
-    db.observaciones.aggregate([
-    {
-        $group: {
-        _id: {
-            año: { $year: "$observacion_fecha" },
-            mes: { $month: "$observacion_fecha" },
-            dia: { $dayOfMonth: "$observacion_fecha" }
-        }
-        }
-    },
-    {
-        $group: {
-        _id: {
-            año: "$_id.año",
-            mes: "$_id.mes"
-        },
-        dias_con_datos: { $sum: 1 }
-        }
-    },
-    {
-        $addFields: {
-            dias_esperados: {
-                $cond: {
-                    if: { $eq: ["$_id.mes", 2] }, // Febrero - 28 días
-                    then: 28,
-                    else: {
-                        $cond: {
-                            if: { $in: ["$_id.mes", [4, 6, 9, 11]] }, // Meses con 30 días
-                            then: 30,
-                            else: 31 // Resto de meses
-                        }
-                    }
-                }            
-            }
-        }
-    },
-    {
-        $project: {
-        _id: 0,
-        año: "$_id.año",
-        mes: "$_id.mes",
-        dias_con_datos: 1,
-        dias_esperados: 1,
-        dias_sin_datos: { $subtract: ["$dias_esperados", "$dias_con_datos"] },
-        porcentaje_cobertura: {
-            $multiply: [
-            { $divide: ["$dias_con_datos", "$dias_esperados"] },
-            100
-            ]
-        }
-        }
-    },
-    {
-        $sort: { año: 1,
-                  mes: 1 }
-    }
-    ]);
-
--- ------------------------------------------------------------------------------------------
--- ¿Distribución de observaciones por hora a nivel global?
--- R/. Esta consulta debería arrojar que todas las horas entre 0 - 23 tienen
---      la misma cantidad de mediciones y su porcentaje es similar
--- ------------------------------------------------------------------------------------------
+-- ********************************************************
+-- Intermedia:
+-- ********************************************************
+/*
+Para cada municipio, ¿cuál fue el día del año 2025 que registró 
+la mayor variación de temperatura (la diferencia absoluta entre 
+la temperatura máxima y la mínima del mismo día)?
+*/
 
 db.observaciones.aggregate([
   {
-    $project: {
-      hora: { $hour: "$observacion_fecha" }
+    // 1. Filtrar observaciones únicamente del año 2025
+    $match: {
+      observacion_fecha: {
+        $gte: ISODate("2025-01-01T00:00:00Z"),
+        $lt: ISODate("2026-01-01T00:00:00Z")
+      }
     }
   },
   {
+    // 2. Agrupar por municipio y por DÍA (restando horas/minutos de la fecha)
     $group: {
-      _id: "$hora",
-      total_observaciones: { $sum: 1 }
-    }
-  },
-  {
-    $group: {
-      _id: null,
-      horas: {
-        $push: {
-          hora: "$_id",
-          observaciones: "$total_observaciones"
-        }
+      _id: {
+        municipio_id: "$municipio_id",
+        municipio_nombre: "$municipio_nombre",
+        // Extraemos la fecha en formato YYYY-MM-DD para colapsar el tiempo
+        dia: { $dateToString: { format: "%Y-%m-%d", date: "$observacion_fecha" } }
       },
-      total_global: { $sum: "$total_observaciones" }
+      temp_max: { $max: "$observacion_valor" },
+      temp_min: { $min: "$observacion_valor" }
     }
   },
   {
-    $unwind: "$horas"
+    // 3. Calcular la variación térmica absoluta de ese día
+    $project: {
+      municipio_id: "$_id.municipio_id",
+      municipio_nombre: "$_id.municipio_nombre",
+      dia: "$_id.dia",
+      variacion_termica: { $subtract: ["$temp_max", "$temp_min"] }
+    }
   },
   {
+    // 4. Ordenar los resultados por variación descendente
+    // (Paso clave para que el día con mayor variación quede arriba por cada municipio)
+    $sort: {
+      municipio_id: 1,
+      variacion_termica: -1
+    }
+  },
+  {
+    // 5. Volver a agrupar, esta vez SOLO por municipio, y tomar el primer documento ($first)
+    // Como ya vienen ordenados de mayor a menor variación, el primero es el día máximo.
+    $group: {
+      _id: "$municipio_id",
+      municipio_nombre: { $first: "$municipio_nombre" },
+      dia_max_variacion: { $first: "$dia" },
+      variacion_maxima: { $first: "$variacion_termica" }
+    }
+  },
+  {
+    // 6. Limpieza final de la estructura de salida
     $project: {
       _id: 0,
-      hora: "$horas.hora",
-      observaciones: "$horas.observaciones",
-      porcentaje_cobertura: {
-        $multiply: [
-          { $divide: ["$horas.observaciones", "$total_global"] },
-          100
-        ]
-      }
+      municipio_id: "$_id",
+      municipio_nombre: 1,
+      dia_max_variacion: 1,
+      variacion_maxima: 1
     }
-  },
-  {
-    $sort: { hora: 1 }
   }
 ]);
 
+-- ********************************************************
+-- Avanzada:
+-- ********************************************************
 
+/*
+Detectar posibles anomalías en los sensores: Para cada estación, 
+muestra todas las observaciones individuales donde la 
+temperatura registrada sea al menos 5 grados superior al 
+promedio de las lecturas de esa misma estación durante 
+las 4 horas inmediatamente anteriores
+*/
 
--- ------------------------------------------------------------------------------------------
--- Identificar lapsos irregulares entre observaciones por estación
--- R/. Esta consulta debería arrojar que todas las mediciones por estaciones están 
---      igualmente espaciadas
--- ------------------------------------------------------------------------------------------
 db.observaciones.aggregate([
   {
-    $sort: { estacion_id: 1, fecha: 1 }
-  },
-  {
-    $group: {
-      _id: "$estacion_id",
-      estacion_nombre: { $first: "$estacion_nombre" },
-      observaciones: { $push: "$observacion_fecha" },
-      total_observaciones: { $sum: 1 }
-    }
-  },
-  {
-    $project: {
-      _id: 0,
-      estacion_id: "$_id",
-      estacion_nombre: 1,
-      total_observaciones: 1,
-      diferencias_minutos: {
-        $map: {
-          input: { $range: [1, { $size: "$observaciones" }] },
-          as: "idx",
-          in: {
-            $divide: [
-              { $subtract: [
-                { $arrayElemAt: ["$observaciones", "$$idx"] },
-                { $arrayElemAt: ["$observaciones", { $subtract: ["$$idx", 1] }] }
-              ] },
-              60000 // Convierte milisegundos a minutos
-            ]
+    // 1. Crear la ventana móvil utilizando la sintaxis numérica correcta
+    $setWindowFields: {
+      partitionBy: "$estacion_id",
+      sortBy: { observacion_fecha: 1 },
+      output: {
+        promedio_ultimas_4h: {
+          $avg: "$observacion_valor",
+          window: {
+            // Definimos el rango numérico: desde 4 unidades atrás hasta la posición actual
+            range: [-4, "current"],
+            // Aquí especificamos que cada unidad numérica equivale a 1 hora
+            unit: "hour"
           }
         }
       }
     }
   },
   {
+    // 2. Calcular la diferencia entre la temperatura actual y el promedio
     $project: {
+      _id: 0,
       estacion_id: 1,
       estacion_nombre: 1,
-      total_observaciones: 1,
-      lapso_minimo: { $round: [{ $min: "$diferencias_minutos" }, 3] },
-      lapso_promedio: { $round: [{ $avg: "$diferencias_minutos" }, 3] },
-      lapso_maximo: { $round: [{ $max: "$diferencias_minutos" }, 3] },
-      desviacion_estandar: { $round: [{ $stdDevPop: "$diferencias_minutos" }, 3] }
+      observacion_fecha: 1,
+      temperatura_actual: "$observacion_valor",
+      promedio_historico_4h: "$promedio_ultimas_4h",
+      diferencia_termica: { $subtract: ["$observacion_valor", "$promedio_ultimas_4h"] }
     }
   },
   {
-    $sort: { estacion_nombre: 1 }
-  }
-]);
-
-
-
--- ------------------------------------------------------------------------------------------
--- Temperatura promedio por estación en el mes de mayo
--- ------------------------------------------------------------------------------------------
--- Versión en colección time series
-db.mediciones.aggregate([
-  {
+    // 3. Filtrar solo las anomalías (Diferencia >= 5 grados)
     $match: {
-      observacion_fecha: {
-        $gte: ISODate("2025-05-01T00:00:00.000Z"),
-        $lt: ISODate("2025-06-01T00:00:00.000Z")
-      }
+      diferencia_termica: { $gte: 5 }
     }
   },
   {
-    $group: {
-      _id: "$metadata.estacion_nombre",
-      temperatura_promedio: { $avg: "$observacion_valor" },
-      total_mediciones: { $sum: 1 },
-      estacion_id: { $first: "$metadata.estacion_id" }
+    // 4. Ordenar por fecha reciente
+    $sort: {
+      observacion_fecha: -1
     }
-  },
-  {
-    $project: {
-      _id: 0,
-      estacion_nombre: "$_id",
-      estacion_id: 1,
-      temperatura_promedio: { $round: ["$temperatura_promedio", 2] },
-      total_mediciones: 1
-    }
-  },
-  {
-    $sort: { temperatura_promedio: -1 }
-  }
-]);
-
--- Versión en colección de propósito general
-db.observaciones.aggregate([
-  {
-    $match: {
-      fecha: {
-        $gte: ISODate("2025-05-01T00:00:00.000Z"),
-        $lt: ISODate("2025-06-01T00:00:00.000Z")
-      }
-    }
-  },
-  {
-    $group: {
-      _id: "$estacion_nombre",
-      temperatura_promedio: { $avg: "$valor" },
-      total_mediciones: { $sum: 1 },
-      estacion_id: { $first: "$estacion_id" }
-    }
-  },
-  {
-    $project: {
-      _id: 0,
-      estacion_nombre: "$_id",
-      estacion_id: 1,
-      temperatura_promedio: { $round: ["$temperatura_promedio", 2] },
-      total_mediciones: 1
-    }
-  },
-  {
-    $sort: { temperatura_promedio: -1 }
   }
 ]);

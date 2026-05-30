@@ -2,7 +2,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbaac"
   },
-  "estacion_id": "1111500036",
   "estacion_nombre": "ABRIAQUI",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbada"
@@ -15,7 +14,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbaad"
   },
-  "estacion_id": "2620500209",
   "estacion_nombre": "ACUEDUCTO ARMENIA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbade"
@@ -28,7 +26,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbaae"
   },
-  "estacion_id": "0023085270",
   "estacion_nombre": "AEROPUERTO J.M. CORDOVA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf0"
@@ -41,7 +38,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbaaf"
   },
-  "estacion_id": "0027015330",
   "estacion_nombre": "AEROPUERTO OLAYA HERRERA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaec"
@@ -54,7 +50,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab0"
   },
-  "estacion_id": "0023175020",
   "estacion_nombre": "AEROPUERTO OTU",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaee"
@@ -67,7 +62,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab1"
   },
-  "estacion_id": "2701500213",
   "estacion_nombre": "ALTO DE LA CRUZ",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbadb"
@@ -80,7 +74,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab2"
   },
-  "estacion_id": "0027010850",
   "estacion_nombre": "AMALFI",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbadb"
@@ -93,7 +86,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab3"
   },
-  "estacion_id": "2702500107",
   "estacion_nombre": "ANGOSTURA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbadc"
@@ -106,7 +98,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab4"
   },
-  "estacion_id": "0027025030",
   "estacion_nombre": "ANORI",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbadd"
@@ -119,7 +110,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab5"
   },
-  "estacion_id": "0027015320",
   "estacion_nombre": "ARAGON",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf5"
@@ -132,7 +122,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab6"
   },
-  "estacion_id": "0011110110",
   "estacion_nombre": "BOQUERON DE TOYO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae8"
@@ -145,7 +134,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab7"
   },
-  "estacion_id": "1111500203",
   "estacion_nombre": "CAMPO ALEGRE",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae3"
@@ -158,7 +146,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab8"
   },
-  "estacion_id": "0011115020",
   "estacion_nombre": "CAÑASGORDAS",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae1"
@@ -171,7 +158,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbab9"
   },
-  "estacion_id": "0023085160",
   "estacion_nombre": "CORRIENTES",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf7"
@@ -184,7 +170,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbaba"
   },
-  "estacion_id": "2614500116",
   "estacion_nombre": "EL JARDIN CUENCA ALTA RIO RISARALDA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaea"
@@ -197,7 +182,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbabb"
   },
-  "estacion_id": "2620500211",
   "estacion_nombre": "EL PLAN",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae6"
@@ -210,7 +194,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbabc"
   },
-  "estacion_id": "0023085080",
   "estacion_nombre": "GRANJA EXPERIMENTAL EL NUS",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf2"
@@ -223,7 +206,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbabd"
   },
-  "estacion_id": "0027015190",
   "estacion_nombre": "GUAYABITO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf6"
@@ -236,7 +218,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbabe"
   },
-  "estacion_id": "0026225060",
   "estacion_nombre": "HACIENDA COTOVE",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf4"
@@ -249,7 +230,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbabf"
   },
-  "estacion_id": "0026175040",
   "estacion_nombre": "HACIENDA TUNEZ",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae6"
@@ -262,7 +242,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac0"
   },
-  "estacion_id": "2621500070",
   "estacion_nombre": "ITUANGO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae9"
@@ -275,7 +254,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac1"
   },
-  "estacion_id": "0025021480",
   "estacion_nombre": "LA ESPERANZA RADIO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaed"
@@ -288,7 +266,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac2"
   },
-  "estacion_id": "0027030140",
   "estacion_nombre": "LA PALMA DE COCO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf8"
@@ -301,7 +278,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac3"
   },
-  "estacion_id": "0027015260",
   "estacion_nombre": "LA SALADA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae0"
@@ -314,7 +290,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac4"
   },
-  "estacion_id": "0027011100",
   "estacion_nombre": "LAS BRISAS",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf8"
@@ -327,7 +302,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac5"
   },
-  "estacion_id": "0023085260",
   "estacion_nombre": "LA SELVA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf0"
@@ -340,7 +314,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac6"
   },
-  "estacion_id": "0023105070",
   "estacion_nombre": "MACEO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafe"
@@ -353,7 +326,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac7"
   },
-  "estacion_id": "0026185020",
   "estacion_nombre": "MESOPOTAMIA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaeb"
@@ -366,7 +338,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac8"
   },
-  "estacion_id": "0027015310",
   "estacion_nombre": "METROMEDELLIN",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbadf"
@@ -379,7 +350,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbac9"
   },
-  "estacion_id": "0011115040",
   "estacion_nombre": "MUSINGA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae7"
@@ -392,7 +362,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbaca"
   },
-  "estacion_id": "0011110010",
   "estacion_nombre": "NORMAL SANTA TERESA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae7"
@@ -405,7 +374,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbacb"
   },
-  "estacion_id": "0026200120",
   "estacion_nombre": "OTRAMINA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafa"
@@ -418,7 +386,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbacc"
   },
-  "estacion_id": "0027015280",
   "estacion_nombre": "PARAMO BELMIRA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae5"
@@ -431,7 +398,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbacd"
   },
-  "estacion_id": "0012015100",
   "estacion_nombre": "PISTA INDIRA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafb"
@@ -444,7 +410,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbace"
   },
-  "estacion_id": "2308500071",
   "estacion_nombre": "RETIRO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaef"
@@ -457,7 +422,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbacf"
   },
-  "estacion_id": "0023085220",
   "estacion_nombre": "SAN CARLOS",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf1"
@@ -470,7 +434,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad0"
   },
-  "estacion_id": "0026185050",
   "estacion_nombre": "SANTA BARBARA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf3"
@@ -483,7 +446,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad1"
   },
-  "estacion_id": "0027010810",
   "estacion_nombre": "SANTA ELENA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaec"
@@ -496,7 +458,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad2"
   },
-  "estacion_id": "0026255030",
   "estacion_nombre": "SANTA ISABEL VALDIVIA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafc"
@@ -509,7 +470,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad3"
   },
-  "estacion_id": "0027035050",
   "estacion_nombre": "SENA - EL BAGRE",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae4"
@@ -522,7 +482,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad4"
   },
-  "estacion_id": "0026180180",
   "estacion_nombre": "SONSON",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbaf9"
@@ -535,7 +494,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad5"
   },
-  "estacion_id": "0012015060",
   "estacion_nombre": "TULENAPA",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbae2"
@@ -548,7 +506,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad6"
   },
-  "estacion_id": "0012025040",
   "estacion_nombre": "TURBO",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafb"
@@ -561,7 +518,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad7"
   },
-  "estacion_id": "2620500210",
   "estacion_nombre": "UFRANÁ",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafa"
@@ -574,7 +530,6 @@
   "_id": {
     "$oid": "6a1ae5f18fcafc10d9ecbad8"
   },
-  "estacion_id": "0023105030",
   "estacion_nombre": "VEGACHI",
   "municipio_id": {
     "$oid": "6a1ae5fb8fcafc10d9ecbafd"
