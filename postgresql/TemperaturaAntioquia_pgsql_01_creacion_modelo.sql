@@ -542,6 +542,156 @@ create or replace view v_ubicacion_estacion as
 );
 
 
+-- vista: v_gaps_resumen
+create or replace view v_gaps_resumen as
+SELECT
+    i.estacion_id,
+    COUNT(*)                                   num_gaps,
+    ROUND(MIN(i.intervalo_horas)::numeric, 1)  gap_minimo_horas,
+    ROUND(MAX(i.intervalo_horas)::numeric, 1)  gap_maximo_horas,
+    ROUND(AVG(i.intervalo_horas)::numeric, 1)  gap_promedio_horas,
+    ROUND(SUM(i.intervalo_horas)::numeric, 1)  total_horas_perdidas
+FROM mv_intervalos i
+WHERE i.intervalo_horas IS NOT NULL
+GROUP BY i.estacion_id;
+
+-- vista: v_intervalos_por_estacion
+create or replace view v_intervalos_por_estacion as
+SELECT
+    i.estacion_id,
+    COUNT(*)                                           num_intervalos,
+    ROUND(MIN(i.intervalo_minutos)::numeric, 1)        intervalo_minimo_min,
+    ROUND(MAX(i.intervalo_minutos)::numeric, 1)        intervalo_maximo_min,
+    ROUND(AVG(i.intervalo_minutos)::numeric, 1)        intervalo_promedio_min,
+    ROUND(
+        PERCENTILE_CONT(0.50) WITHIN GROUP
+        (ORDER BY i.intervalo_minutos)::numeric, 1
+    )                                                  intervalo_mediana_min,
+    ROUND(STDDEV(i.intervalo_minutos)::numeric, 1)     intervalo_stddev_min
+FROM mv_intervalos i
+WHERE i.intervalo_minutos IS NOT NULL
+GROUP BY i.estacion_id;
+
+-- vista: v_duplicados_exactos
+create or replace view v_duplicados_exactos as
+SELECT
+    o.estacion_id,
+    o.fecha,
+    o.valor               temperatura,
+    COUNT(*)              num_repeticiones
+FROM observaciones o
+GROUP BY
+    o.estacion_id,
+    o.fecha,
+    o.valor
+HAVING COUNT(*) > 1;
+
+
+-- vista: v_cuasi_duplicados
+create or replace view v_cuasi_duplicados AS
+SELECT
+    o.estacion_id,
+    o.fecha                                 fecha_actual,
+    o.valor                                 valor_actual,
+    LEAD(o.fecha) OVER (
+        PARTITION BY o.estacion_id
+        ORDER BY o.fecha
+    )                                       fecha_siguiente,
+    LEAD(o.valor) OVER (
+        PARTITION BY o.estacion_id
+        ORDER BY o.fecha
+    )                                       valor_siguiente
+FROM observaciones o;
+
+
+-- vista: v_stats_temperatura_por_estacion
+create or replace view v_stats_temperatura_por_estacion as
+SELECT
+    d.estacion_id,
+    COUNT(DISTINCT d.dia)                    dias_analizados,
+    SUM(d.num_observaciones)                 total_observaciones,
+    ROUND(MIN(d.temp_minima)::numeric, 2)    temp_minima,
+    ROUND(MAX(d.temp_maxima)::numeric, 2)    temp_maxima,
+    ROUND(AVG(d.temp_promedio)::numeric, 2)  temp_promedio,
+    ROUND(AVG(d.temp_stddev)::numeric, 2)    temp_stddev,
+    ROUND(AVG(d.percentil_25)::numeric, 2)   percentil_25,
+    ROUND(AVG(d.mediana)::numeric, 2)        mediana,
+    ROUND(AVG(d.percentil_75)::numeric, 2)   percentil_75,
+    ROUND(
+        (MAX(d.temp_maxima) - MIN(d.temp_minima))::numeric, 2
+    )                                        rango_termico
+FROM mv_resumen_diario d
+GROUP BY d.estacion_id;
+
+-- vista: v_outliers_fisicos
+create or replace view v_outliers_fisicos AS
+SELECT
+    o.estacion_id,
+    o.fecha,
+    ROUND(o.valor::numeric, 2)  temperatura,
+    CASE
+        WHEN o.valor < -5.0  THEN 'Bajo límite físico'
+        WHEN o.valor > 45.0  THEN 'Sobre límite físico'
+        WHEN o.valor <  5.0  THEN 'Bajo rango normal'
+        WHEN o.valor > 35.0  THEN 'Sobre rango normal'
+    END                          tipo_outlier
+FROM observaciones o
+WHERE
+       o.valor < -5.0
+    OR o.valor > 45.0
+    OR o.valor <  5.0
+    OR o.valor > 35.0;
+
+
+-- vista: v_outliers_iqr
+create or replace view v_outliers_iqr AS
+SELECT
+    o.estacion_id,
+    o.fecha,
+    ROUND(o.valor::numeric, 2)                                  temperatura,
+    ROUND(st.percentil_25::numeric, 2)                          percentil_25,
+    ROUND(st.percentil_75::numeric, 2)                          percentil_75,
+    ROUND(st.iqr::numeric, 2)                                   iqr,
+    ROUND((st.percentil_25 - (1.5 * st.iqr))::numeric, 2)       limite_inferior,
+    ROUND((st.percentil_75 + (1.5 * st.iqr))::numeric, 2)       limite_superior,
+    CASE
+        WHEN o.valor < st.percentil_25 - (1.5 * st.iqr)
+            THEN 'Bajo límite IQR'
+        WHEN o.valor > st.percentil_75 + (1.5 * st.iqr)
+            THEN 'Sobre límite IQR'
+    END                                                         tipo_outlier
+FROM observaciones o
+JOIN mv_stats_iqr st ON o.estacion_id = st.estacion_id
+WHERE
+       o.valor < st.percentil_25 - (1.5 * st.iqr)
+    OR o.valor > st.percentil_75 + (1.5 * st.iqr);    
+
+
+-- vista: v_outliers_zscore
+create or replace view v_outliers_zscore AS
+SELECT
+    o.estacion_id,
+    o.fecha,
+    ROUND(o.valor::numeric, 2)                                          temperatura,
+    ROUND(st.media::numeric, 2)                                         media_estacion,
+    ROUND(st.desviacion::numeric, 2)                                    desviacion_estacion,
+    ROUND(
+        ((o.valor - st.media) / NULLIF(st.desviacion, 0))::numeric, 3
+    )                                                                   zscore,
+    CASE
+        WHEN (o.valor - st.media) / NULLIF(st.desviacion, 0) >  3.0
+            THEN 'Z-score superior'
+        WHEN (o.valor - st.media) / NULLIF(st.desviacion, 0) < -3.0
+            THEN 'Z-score inferior'
+    END                                                                 tipo_outlier
+FROM observaciones o
+JOIN mv_stats_iqr st ON o.estacion_id = st.estacion_id
+WHERE ABS(
+    (o.valor - st.media) / NULLIF(st.desviacion, 0)
+) > 3.0;
+
+
+
 -- ===========================================
 -- Creación de Vistas Materializadas
 -- ===========================================
@@ -558,7 +708,7 @@ select
     z.id zona_id,
     z.nombre zona_nombre,
     d.id departamento_id,
-    d.nombre departamento
+    d.nombre departamento_nombre
 from estaciones    e
 join municipios    m on e.municipio_id     = m.id
 join zonas         z on m.zona_id          = z.id
