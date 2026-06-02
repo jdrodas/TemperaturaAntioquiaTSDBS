@@ -260,8 +260,6 @@ db.runCommand({
   validationAction: "error"
 });
 
-
-
 -- Para la colección estaciones
 db.runCommand({
   collMod: "estaciones",
