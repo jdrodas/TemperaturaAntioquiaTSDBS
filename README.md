@@ -17,8 +17,8 @@ Los datos originales fueron tomados de la Plataforma Nacional de Datos Abiertos 
 Filtros aplicados:
 
 - **Departamento**: Antioquia
-- **Rango fechas**: Enero 1 de 2024, 12:00 am a Abril 30 de 2026, 11:59 pm.
-- **Total registros estimados (tras ampliación del rango)**: ~1.266.402 filas.
+- **Rango fechas**: Abril1 de 2024, 12:00 am a Mayo 31 de 2026, 11:58 pm.
+- **Total registros estimados**: ~ 1'300.461 filas.
 
 **Importante**: Los datos aquí expuestos son utilizados con fines académicos. Por favor acceda al recurso relacionado para conocer más información al respecto.
 
@@ -29,7 +29,7 @@ Filtros aplicados:
 1. **Diseñar** modelos de datos apropiados para series de tiempo en cada tecnología
 2. **Implementar** esquemas y consultas representativas del dominio
 3. **Analizar** las consideraciones de diseño específicas de cada aproximación
-4. **Comparar** rendimiento, escalabilidad y complejidad de implementación con ~1.2 millones de registros
+4. **Comparar** rendimiento, escalabilidad y complejidad de implementación con ~1.3 millones de registros
 5. **Documentar** ventajas y desventajas de cada solución
 6. **Explorar** la calidad de los datos crudos mediante EDA antes de la carga
 
@@ -40,7 +40,7 @@ Filtros aplicados:
 El caso de estudio se centra en un sistema de **monitoreo de temperatura ambiente** con las siguientes características:
 
 - **Múltiples estaciones de medición** distribuidas en diferentes municipios del departamento de Antioquia
-- **Período de análisis**: Enero 2024 – Abril 2026 (~2 años, 4 meses)
+- **Período de análisis**: Abril 2024 – Mayo 2026 (~2 años, 4 meses)
 - **Frecuencia de medición**: Aproximadamente cada 15 minutos
 - **Datos temporales**: Timestamps precisos para cada medición
 
@@ -60,28 +60,28 @@ Este dominio es ideal para evaluar bases de datos de series de tiempo debido a:
 
 Cada registro en el archivo fuente (CSV exportado desde datos.gov.co) solo contiene las siguientes columnas:
 
-| Columna           	| Tipo sugerido     	| Descripción                                                                |
-|-----------------------|-----------------------|----------------------------------------------------------------------------|
-| `CodigoEstacion`  	| `VARCHAR` / `TEXT` 	| Identificador único de la estación de medición                             |
-| `CodigoSensor`    	| `VARCHAR` / `TEXT` 	| Código del sensor asociado a la medición (ej. `0068`, `0071`)              |
-| `FechaObservacion`	| `TIMESTAMP`        	| Fecha y hora de la medición (formato: `YYYY Mon DD HH:MM:SS AM/PM`)        |
-| `ValorObservado`  	| `FLOAT` / `DOUBLE` 	| Temperatura registrada en grados Celsius (usa coma como separador decimal) |
-| `NombreEstacion`  	| `VARCHAR` / `TEXT` 	| Nombre descriptivo de la estación meteorológica                            |
-| `Departamento`    	| `VARCHAR` / `TEXT` 	| Departamento donde se ubica la estación                                    |
-| `Municipio`       	| `VARCHAR` / `TEXT` 	| Municipio donde se ubica la estación                                       |
-| `ZonaHidrografica`	| `VARCHAR` / `TEXT` 	| Zona hidrográfica a la que pertenece la estación (ej. `NECHÍ`, `CAUCA`)    |
-| `Latitud`       		| `FLOAT` / `DOUBLE` 	| Componente latitud de la coordenada geográfica de la estación 			 |
-| `Longitud`       		| `FLOAT` / `DOUBLE` 	| Componente longitud de la coordenada geográfica de la estación             |
-| `DescripcionSensor`  	| `VARCHAR` / `TEXT` 	| Nombre del sensor utilizados												 |
-| `UnidadMedida`  		| `VARCHAR` / `TEXT` 	| Unidad de medida para el dato medido										 |
+| Columna               | Tipo sugerido          | Descripción                                                                   |
+| --------------------- | ---------------------- | ----------------------------------------------------------------------------- |
+| `CodigoEstacion`      | `VARCHAR` / `TEXT`   | Identificador único de la estación de medición                                  |
+| `CodigoSensor`        | `VARCHAR` / `TEXT`   | Código del sensor asociado a la medición (ej.`0068`, `0071`)                    |
+| `FechaObservacion`    | `TIMESTAMP`          | Fecha y hora de la medición (formato:`YYYY Mon DD HH:MM:SS AM/PM`)              |
+| `ValorObservado`      | `FLOAT` / `DOUBLE`   | Temperatura registrada en grados Celsius (usa coma como separador decimal)      |
+| `NombreEstacion`      | `VARCHAR` / `TEXT`   | Nombre descriptivo de la estación meteorológica                                 |
+| `Departamento`        | `VARCHAR` / `TEXT`   | Departamento donde se ubica la estación                                         |
+| `Municipio`           | `VARCHAR` / `TEXT`   | Municipio donde se ubica la estación                                            |
+| `ZonaHidrografica`    |  `VARCHAR` / `TEXT`  | Zona hidrográfica a la que pertenece la estación (ej.`NECHÍ`, `CAUCA`)          |
+| `Latitud`             | `FLOAT` / `DOUBLE`   | Componente latitud de la coordenada geográfica de la estación                   |
+| `Longitud`            | `FLOAT` / `DOUBLE`   | Componente longitud de la coordenada geográfica de la estación                  |
+| `DescripcionSensor`   | `VARCHAR` / `TEXT`   | Nombre del sensor utilizados                                                    |
+| `UnidadMedida`        | `VARCHAR` / `TEXT`   | Unidad de medida para el dato medido                                            |
 
+**Nota sobre calidad de datos**: Los datos crudos presentan problemas típicos de fuentes IoT:
 
-**Nota sobre calidad de datos**: Los datos crudos presentan problemas típicos de fuentes IoT:   
 - valores faltantes
-- registros duplicados   
+- registros duplicados
 - inconsistencias en el formato de fecha y hora
-- valores atípicos. 
- 
+- valores atípicos.
+
 El Notebook de EDA (ver sección correspondiente) documenta y trata estos problemas.
 
 ---
@@ -92,10 +92,9 @@ El Notebook de EDA (ver sección correspondiente) documenta y trata estos proble
 
 Implementación tradicional usando un modelo relacional normalizado. Sirve como línea base para comparar el rendimiento y complejidad del diseño con las soluciones especializadas.
 
-**Directorio**: 
+**Directorio**:
 
 [`/postgresql`](https://github.com/jdrodas/TemperaturaAntioquiaTSDBS/blob/main/postgresql)
-
 
 ### 2. TimescaleDB
 
@@ -127,7 +126,7 @@ Base de datos OLAP orientada a columnas, diseñada para análisis de grandes vol
 
 Como paso previo a la carga en cualquier motor de base de datos, se incluye un Jupyter Notebook de EDA que permite entender la estructura, calidad y características del dataset crudo.
 
-**Directorio**: `/eda`  
+**Directorio**: `/eda`
 **Archivo principal**: [`eda_temperatura_antioquia.ipynb`](https://github.com/jdrodas/TemperaturaAntioquiaTSDBS/blob/main/eda/eda_temperatura_antioquia.ipynb)
 
 ### Contenido esperado del Notebook
@@ -135,33 +134,38 @@ Como paso previo a la carga en cualquier motor de base de datos, se incluye un J
 El notebook cubre las siguientes etapas:
 
 1. **Carga e inspección inicial**
+
    - Lectura del modelo de datos relacional en base de datos PostgreSQL
    - Revisión de tipos de datos, forma del dataset y primeras filas
 
 2. **Análisis de calidad de datos**
+
    - Detección de valores nulos y registros incompletos
    - Identificación de duplicados (misma estación, mismo timestamp)
    - Validación del rango de fechas y consistencia del período
    - Revisión de formatos: separador decimal (coma vs punto), formato de timestamp
 
 3. **Análisis de valores atípicos**
+
    - Distribución de `ValorObservado` por estación y municipio
    - Detección de outliers (temperaturas físicamente improbables)
    - Visualización de boxplots y series temporales por estación
 
 4. **Exploración temporal**
+
    - Frecuencia real de muestreo (¿cada cuánto llegan los registros?)
    - Gaps o interrupciones en la serie temporal por estación
    - Análisis estacional: comparación por mes y por año (2023–2026)
 
 5. **Análisis por dimensiones geográficas**
+
    - Distribución de estaciones por municipio y zona hidrográfica
    - Comparación de temperaturas medias entre zonas
 
 6. **Conclusiones y recomendaciones de limpieza**
+
    - Resumen de problemas encontrados
    - Decisiones de preprocesamiento aplicadas antes de la carga a cada motor
-
 
 ---
 

@@ -1,22 +1,22 @@
 [
   {
-    "zona_id": 4,
-    "zona_nombre": "ATRATO - DARIÉN"
-  },
-  {
-    "zona_id": 5,
-    "zona_nombre": "CARIBE - LITORAL"
+    "zona_id": 1,
+    "zona_nombre": "MEDIO MAGDALENA"
   },
   {
     "zona_id": 2,
     "zona_nombre": "CAUCA"
   },
   {
-    "zona_id": 1,
-    "zona_nombre": "MEDIO MAGDALENA"
-  },
-  {
     "zona_id": 3,
     "zona_nombre": "NECHÍ"
+  },
+  {
+    "zona_id": 4,
+    "zona_nombre": "ATRATO - DARIÉN"
+  },
+  {
+    "zona_id": 5,
+    "zona_nombre": "CARIBE - LITORAL"
   }
 ]

@@ -1,4 +1,4 @@
--- Scripts de clase - Mayo de 2026
+-- Scripts de clase - Junio de 2026
 -- Juan Dario Rodas - jdrodas@hotmail.com
 
 -- Proyecto: Analisis de Temperatura en Antioquia para el año 2024 y 2026
@@ -34,8 +34,8 @@ https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Datos-Hidrometeorol-gi
 Filtros aplicados:
 
 Departamento: Antioquia
-Rango fechas: Abril 1 de 2024, 12:00 am a Abril 30 2026, 11:58 pm.
-Total registros iniciales antes de control de calidad: -- 1'483.120
+Rango fechas: Abril 1 de 2024, 12:00 am a Mayo 31 2026, 11:58 pm.
+Total registros iniciales antes de control de calidad: -- 1'546.662
 
 Importante:
 Los datos aqui expuestos son utilizados con fines académicos. 
@@ -439,15 +439,15 @@ from observaciones;
 -- ==========================================================
 
 /*
-Antes de normalizar: 1'483.120 registros
-Después de normalizar: 1'238.343 registros
+Antes de normalizar: 1'546.662 registros
+Después de normalizar: 1'300.461 registros
 
-Duplicados exactos eliminados: 244.777 registros
+Duplicados exactos eliminados: 246.201 registros
 */
 
 
 -- ===========================================
--- Creación de Vistas
+-- Creación de Vistas y Vistas Materializads
 -- ===========================================
 
 create view v_info_departamentos as
@@ -501,45 +501,119 @@ create view v_info_estaciones as
     join departamentos d on m.departamento_id = d.id
 );
 
--- vista: v_info_observacion
-create or replace view v_info_observacion as
-(
-    select distinct
-        o.id observacion_id,
-        o.fecha observacion_fecha,
-        o.valor observacion_valor,
-        o.estacion_id,
-        e.nombre estacion_nombre,
-        e.municipio_id,
-        m.nombre municipio_nombre,
-        m.zona_id,
-        z.nombre zona_nombre,
-        m.departamento_id,
-        d.nombre departamento_nombre
-    from observaciones o
-        inner join estaciones e on o.estacion_id = e.id
-        inner join municipios m on e.municipio_id = m.id
-        inner join zonas z on m.zona_id = z.id
-        inner join departamentos d on m.departamento_id = d.id
-);
+-- Vista materializada: mv_inventario_geografico
+create materialized view mv_inventario_geografico as
+select
+    e.id estacion_id,
+    e.nombre estacion_nombre,
+    e.latitud estacion_latitud,
+    e.longitud estacion_longitud,
+    m.id municipio_id,
+    m.nombre municipio_nombre,
+    z.id zona_id,
+    z.nombre zona_nombre,
+    d.id departamento_id,
+    d.nombre departamento_nombre
+from estaciones    e
+join municipios    m on e.municipio_id     = m.id
+join zonas         z on m.zona_id          = z.id
+join departamentos d on m.departamento_id  = d.id;
 
--- vista: v_ubicacion_estacion
-create or replace view v_ubicacion_estacion as
-(
-    select distinct
-        e.id estacion_id,
-        e.nombre estacion_nombre,
-        e.municipio_id,
-        m.nombre municipio_nombre,
-        m.zona_id,
-        zh.nombre zona_nombre,
-        m.departamento_id,
-        d.nombre departamento_nombre
-    from estaciones e
-        inner join municipios m on e.municipio_id = m.id
-        inner join zonas zh on m.zona_id = zh.id
-        inner join departamentos d on m.departamento_id = d.id
-);
+create unique index idx_mv_inventario_geografico_estacion_id
+    on mv_inventario_geografico (estacion_id);
+
+create index idx_mv_inventario_geografico_municipio_id
+    on mv_inventario_geografico (municipio_id);
+
+create index idx_mv_inventario_geografico_departamento
+    on mv_inventario_geografico (departamento_nombre);
+
+create index idx_mv_inventario_geografico_zona
+    on mv_inventario_geografico (zona_nombre);
+
+
+-- Vista materializada: mv_resumen_diario
+create materialized view mv_resumen_diario as
+select
+    o.estacion_id,
+    o.fecha_dia dia,
+    COUNT(*) num_observaciones,
+    MIN(o.valor) temp_minima,
+    MAX(o.valor) temp_maxima,
+    AVG(o.valor) temp_promedio,
+    STDDEV(o.valor) temp_stddev,
+    PERCENTILE_CONT(0.25) within group (order by o.valor)  percentil_25,
+    PERCENTILE_CONT(0.50) within group (order by o.valor)  mediana,
+    PERCENTILE_CONT(0.75) within group (order by o.valor)  percentil_75,
+    MIN(o.fecha) primera_obs_dia,
+    MAX(o.fecha) ultima_obs_dia
+FROM observaciones o
+GROUP BY o.estacion_id, o.fecha_dia;
+
+create unique index idx_mv_resumen_diario_unique
+    on mv_resumen_diario (estacion_id, dia);
+
+create index idx_mv_resumen_diario_dia
+    on mv_resumen_diario (dia);
+
+create index idx_mv_resumen_diario_estacion_dia
+    on mv_resumen_diario (estacion_id, dia);
+
+
+-- Vista materializada: mv_resumen_mensual
+create materialized view mv_resumen_mensual as
+select
+    DATE_TRUNC('month', dia)  mes,
+    estacion_id,
+    dia,
+    SUM(num_observaciones)   num_observaciones,
+    MIN(temp_minima)         temp_minima,
+    MAX(temp_maxima)         temp_maxima,
+    ROUND(AVG(temp_promedio)::numeric, 4)  temp_promedio,
+    ROUND(AVG(temp_stddev)::numeric, 4)    temp_stddev,
+    ROUND(AVG(percentil_25)::numeric, 4)   percentil_25,
+    ROUND(AVG(mediana)::numeric, 4)        mediana,
+    ROUND(AVG(percentil_75)::numeric, 4)   percentil_75,
+    COUNT(DISTINCT dia)                    dias_con_datos
+from mv_resumen_diario
+group by DATE_TRUNC('month', dia), estacion_id, dia;
+
+create unique index idx_mv_resumen_mensual_unique
+    on mv_resumen_mensual (estacion_id, mes,dia);
+
+create index idx_mv_resumen_mensual_mes
+    on mv_resumen_mensual (mes);
+
+create index idx_mv_resumen_mensual_estacion_mes
+    on mv_resumen_mensual (estacion_id, mes);    
+
+
+-- Vista materializada: mv_intervalos
+create materialized view mv_intervalos as
+with obs_ordenadas as (
+    select
+        estacion_id,
+        fecha,
+        LAG(fecha) over (
+            partition by estacion_id
+            order by fecha
+        ) as fecha_anterior
+    from observaciones
+)
+select
+    estacion_id,
+    fecha_anterior intervalo_inicio,
+    fecha intervalo_fin,
+    EXTRACT(EPOCH from (fecha - fecha_anterior)) / 60.0 intervalo_minutos,
+    EXTRACT(EPOCH from (fecha - fecha_anterior)) / 3600.0 intervalo_horas
+from obs_ordenadas
+where fecha_anterior is not null;
+
+create index idx_mv_intervalos_estacion_inicio
+    on mv_intervalos (estacion_id, intervalo_inicio);
+
+create index idx_mv_intervalos_horas
+    on mv_intervalos (intervalo_horas);
 
 
 -- vista: v_gaps_resumen
@@ -603,7 +677,6 @@ SELECT
     )                                       valor_siguiente
 FROM observaciones o;
 
-
 -- vista: v_stats_temperatura_por_estacion
 create or replace view v_stats_temperatura_por_estacion as
 SELECT
@@ -642,6 +715,27 @@ WHERE
     OR o.valor <  5.0
     OR o.valor > 35.0;
 
+-- Vista materializada: mv_stats_iqr
+create materialized view mv_stats_iqr as
+select
+    estacion_id,
+    COUNT(distinct dia) dias_analizados,
+    AVG(temp_promedio)  media,
+    STDDEV(temp_promedio) desviacion,
+    MIN(temp_minima)      temp_minima,
+    MAX(temp_maxima)      temp_maxima,
+    PERCENTILE_CONT(0.25) within group (order by temp_promedio) percentil_25,
+    PERCENTILE_CONT(0.50) within group (order by temp_promedio) mediana,
+    PERCENTILE_CONT(0.75) within group (order by temp_promedio) percentil_75,
+    PERCENTILE_CONT(0.75) within group (order by temp_promedio) -
+    PERCENTILE_CONT(0.25) within group (order by temp_promedio) iqr
+from mv_resumen_diario
+group by estacion_id;
+
+-- Índice único requerido para REFRESH CONCURRENTLY
+create unique index idx_mv_stats_iqr_unique
+    on mv_stats_iqr (estacion_id);    
+
 
 -- vista: v_outliers_iqr
 create or replace view v_outliers_iqr AS
@@ -666,7 +760,6 @@ WHERE
        o.valor < st.percentil_25 - (1.5 * st.iqr)
     OR o.valor > st.percentil_75 + (1.5 * st.iqr);    
 
-
 -- vista: v_outliers_zscore
 create or replace view v_outliers_zscore AS
 SELECT
@@ -690,126 +783,6 @@ WHERE ABS(
     (o.valor - st.media) / NULLIF(st.desviacion, 0)
 ) > 3.0;
 
-
-
--- ===========================================
--- Creación de Vistas Materializadas
--- ===========================================
-
--- Vista: mv_inventario_geografico
-create materialized view mv_inventario_geografico as
-select
-    e.id estacion_id,
-    e.nombre estacion_nombre,
-    e.latitud estacion_latitud,
-    e.longitud estacion_longitud,
-    m.id municipio_id,
-    m.nombre municipio_nombre,
-    z.id zona_id,
-    z.nombre zona_nombre,
-    d.id departamento_id,
-    d.nombre departamento_nombre
-from estaciones    e
-join municipios    m on e.municipio_id     = m.id
-join zonas         z on m.zona_id          = z.id
-join departamentos d on m.departamento_id  = d.id;
-
-create unique index idx_mv_inventario_geografico_estacion_id
-    on mv_inventario_geografico (estacion_id);
-
-create index idx_mv_inventario_geografico_municipio_id
-    on mv_inventario_geografico (municipio_id);
-
-create index idx_mv_inventario_geografico_departamento
-    on mv_inventario_geografico (departamento);
-
-create index idx_mv_inventario_geografico_zona
-    on mv_inventario_geografico (zona_nombre);
-
--- vista: mv_resumen_diario
-create materialized view mv_resumen_diario as
-select
-    o.estacion_id,
-    o.fecha_dia dia,
-    COUNT(*) num_observaciones,
-    MIN(o.valor) temp_minima,
-    MAX(o.valor) temp_maxima,
-    AVG(o.valor) temp_promedio,
-    STDDEV(o.valor) temp_stddev,
-    PERCENTILE_CONT(0.25) within group (order by o.valor)  percentil_25,
-    PERCENTILE_CONT(0.50) within group (order by o.valor)  mediana,
-    PERCENTILE_CONT(0.75) within group (order by o.valor)  percentil_75,
-    MIN(o.fecha) primera_obs_dia,
-    MAX(o.fecha) ultima_obs_dia
-FROM observaciones o
-GROUP BY o.estacion_id, o.fecha_dia;
-
-create unique index idx_mv_resumen_diario_unique
-    on mv_resumen_diario (estacion_id, dia);
-
-create index idx_mv_resumen_diario_dia
-    on mv_resumen_diario (dia);
-
-create index idx_mv_resumen_diario_estacion_dia
-    on mv_resumen_diario (estacion_id, dia);
-
-
--- vista: mv_resumen_mensual
-create materialized view mv_resumen_mensual as
-select
-    DATE_TRUNC('month', dia)  mes,
-    estacion_id,
-    dia,
-    SUM(num_observaciones)   num_observaciones,
-    MIN(temp_minima)         temp_minima,
-    MAX(temp_maxima)         temp_maxima,
-    ROUND(AVG(temp_promedio)::numeric, 4)  temp_promedio,
-    ROUND(AVG(temp_stddev)::numeric, 4)    temp_stddev,
-    ROUND(AVG(percentil_25)::numeric, 4)   percentil_25,
-    ROUND(AVG(mediana)::numeric, 4)        mediana,
-    ROUND(AVG(percentil_75)::numeric, 4)   percentil_75,
-    COUNT(DISTINCT dia)                    dias_con_datos
-from mv_resumen_diario
-group by DATE_TRUNC('month', dia), estacion_id, dia;
-
-create unique index idx_mv_resumen_mensual_unique
-    on mv_resumen_mensual (estacion_id, mes,dia);
-
-create index idx_mv_resumen_mensual_mes
-    on mv_resumen_mensual (mes);
-
-create index idx_mv_resumen_mensual_estacion_mes
-    on mv_resumen_mensual (estacion_id, mes);
-
-
--- vista: mv_intervalos
-create materialized view mv_intervalos as
-with obs_ordenadas as (
-    select
-        estacion_id,
-        fecha,
-        LAG(fecha) over (
-            partition by estacion_id
-            order by fecha
-        ) as fecha_anterior
-    from observaciones
-)
-select
-    estacion_id,
-    fecha_anterior intervalo_inicio,
-    fecha intervalo_fin,
-    EXTRACT(EPOCH from (fecha - fecha_anterior)) / 60.0 intervalo_minutos,
-    EXTRACT(EPOCH from (fecha - fecha_anterior)) / 3600.0 intervalo_horas
-from obs_ordenadas
-where fecha_anterior is not null;
-
-create index idx_mv_intervalos_estacion_inicio
-    on mv_intervalos (estacion_id, intervalo_inicio);
-
-create index idx_mv_intervalos_horas
-    on mv_intervalos (intervalo_horas);
-
-
 -- Vista: mv_gaps_por_estacion
 create materialized view mv_gaps_por_estacion as
 select
@@ -827,28 +800,45 @@ group by estacion_id;
 create unique index idx_mv_gaps_por_estacion_unique
     on mv_gaps_por_estacion (estacion_id);
 
+-- vista: v_info_observacion
+create or replace view v_info_observacion as
+(
+    select distinct
+        o.id observacion_id,
+        o.fecha observacion_fecha,
+        o.valor observacion_valor,
+        o.estacion_id,
+        e.nombre estacion_nombre,
+        e.municipio_id,
+        m.nombre municipio_nombre,
+        m.zona_id,
+        z.nombre zona_nombre,
+        m.departamento_id,
+        d.nombre departamento_nombre
+    from observaciones o
+        inner join estaciones e on o.estacion_id = e.id
+        inner join municipios m on e.municipio_id = m.id
+        inner join zonas z on m.zona_id = z.id
+        inner join departamentos d on m.departamento_id = d.id
+);
 
--- vista: mv_stats_iqr
-create materialized view mv_stats_iqr as
-select
-    estacion_id,
-    COUNT(distinct dia) dias_analizados,
-    AVG(temp_promedio)  media,
-    STDDEV(temp_promedio) desviacion,
-    MIN(temp_minima)      temp_minima,
-    MAX(temp_maxima)      temp_maxima,
-    PERCENTILE_CONT(0.25) within group (order by temp_promedio) percentil_25,
-    PERCENTILE_CONT(0.50) within group (order by temp_promedio) mediana,
-    PERCENTILE_CONT(0.75) within group (order by temp_promedio) percentil_75,
-    PERCENTILE_CONT(0.75) within group (order by temp_promedio) -
-    PERCENTILE_CONT(0.25) within group (order by temp_promedio) iqr
-from mv_resumen_diario
-group by estacion_id;
-
--- Índice único requerido para REFRESH CONCURRENTLY
-create unique index idx_mv_stats_iqr_unique
-    on mv_stats_iqr (estacion_id);
-
+-- vista: v_ubicacion_estacion
+create or replace view v_ubicacion_estacion as
+(
+    select distinct
+        e.id estacion_id,
+        e.nombre estacion_nombre,
+        e.municipio_id,
+        m.nombre municipio_nombre,
+        m.zona_id,
+        zh.nombre zona_nombre,
+        m.departamento_id,
+        d.nombre departamento_nombre
+    from estaciones e
+        inner join municipios m on e.municipio_id = m.id
+        inner join zonas zh on m.zona_id = zh.id
+        inner join departamentos d on m.departamento_id = d.id
+);    
 
 -- ===========================================
 -- Consultas de exportacion de datos
@@ -950,16 +940,50 @@ SELECT
 FROM cron.job
 ORDER BY jobid;
 
+-- ========================================================
+-- Asignación de privilegios para el usuario tempant_qry
+-- En caso de requerirse.
+-- ========================================================
+
+grant select on mv_inventario_geografico to tempant_qry;
+grant select on mv_resumen_diario to tempant_qry;
+grant select on mv_resumen_mensual to tempant_qry;
+grant select on v_gaps_resumen to tempant_qry;
+grant select on v_intervalos_por_estacion to tempant_qry;
+grant select on mv_intervalos to tempant_qry;
+grant select on v_duplicados_exactos to tempant_qry;
+grant select on v_cuasi_duplicados to tempant_qry;
+grant select on v_stats_temperatura_por_estacion to tempant_qry;
+grant select on v_outliers_fisicos to tempant_qry;
+grant select on v_outliers_iqr to tempant_qry;
+grant select on v_outliers_zscore to tempant_qry;
 
 
 -- ===========================================
 -- ZONA DE PELIGRO - BORRADO DE OBJETOS
 -- ===========================================
 
--- Borrado de vistas
-drop materialized view mv_estadisticas_outliers;
+-- Borrado de vistas y vistas materializadas
+drop view v_gaps_resumen;
+drop view v_duplicados_exactos;
 drop view v_ubicacion_estacion;
-drop view v_ubicacion_observacion;
+drop view v_info_estaciones;
+drop view v_stats_temperatura_por_estacion;
+drop view v_intervalos_por_estacion;
+drop view v_info_observacion;
+drop view v_outliers_fisicos;
+drop view v_info_departamentos;
+drop view v_outliers_zscore;
+drop view v_cuasi_duplicados;
+drop view v_outliers_iqr;
+drop view v_info_zonas;
+
+drop materialized view mv_gaps_por_estacion;
+drop materialized view mv_intervalos;
+drop materialized view mv_inventario_geografico;
+drop materialized view mv_resumen_diario;
+drop materialized view mv_resumen_mensual;
+drop materialized view mv_stats_iqr;
 
 -- Borrado de tablas
 drop table observaciones;
@@ -974,3 +998,4 @@ drop sequence departamentos_id_seq;
 drop sequence municipios_id_seq;
 drop sequence observaciones_id_seq;
 drop sequence zonas_id_seq;
+
