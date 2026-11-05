@@ -1,7 +1,7 @@
--- Scripts de clase - Junio de 2026
+-- Scripts de clase - Noviembre de 2026
 -- Juan Dario Rodas - jdrodas@hotmail.com
 
--- Proyecto: Analisis de Temperatura en Antioquia para el año 2024 y 2026
+-- Proyecto: Analisis de Temperatura en Antioquia para el año 2025 y 2026
 -- Motor de Base de datos: PostgreSQL 18.x
 -- Version: Relacional
 
@@ -20,8 +20,8 @@ docker run --name tempant-pgsql -e POSTGRES_PASSWORD=unaClav3 -d -p 5432:5432 po
 -- ***********************************
 
 /*
-Temperatura Antioquia 2024-2026
-Análisis de la temperatura para el departamento de Antioquia en el 2024-2026, 
+Temperatura Antioquia 2025-2026
+Análisis de la temperatura para el departamento de Antioquia en el 2025-2026, 
 usando diferentes tecnologías de almacenamiento de datos.
 
 Los datos originales fueron tomados de la Plataforma Nacional de Datos 
@@ -34,7 +34,7 @@ https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Datos-Hidrometeorol-gi
 Filtros aplicados:
 
 Departamento: Antioquia
-Rango fechas: Abril 1 de 2024, 12:00 am a Mayo 31 2026, 11:58 pm.
+Rango fechas: Enero 1 de 2025, 12:00 am a Octubre 31 2026, 11:58 pm.
 Total registros iniciales antes de control de calidad: -- 1'546.662
 
 Importante:
@@ -169,17 +169,17 @@ AND object_type = 'SEQUENCE';
 -- Tabla datos temporales
 create table datos_temporales
 (
-    codigoestacion      text,    
-    codigosensor        text,
-    fechaobservacion    text,
-    valorobservado      text,
-    nombreestacion      text,
     departamento        text,
     municipio           text,
     zonahidrografica    text,
+    codigoestacion      text,    
+    nombreestacion      text,
+    codigosensor        text,
+    descripcionsensor   text,    
     latitud             text,
-    longitud            text,
-    descripcionsensor   text,
+    longitud            text,    
+    fechaobservacion    text,
+    valorobservado      text,
     UnidadMedida        text
 );
 
@@ -193,7 +193,8 @@ select distinct codigoestacion,
                 count(distinct nombreestacion) total_nombres
 from datos_temporales
 group by codigoestacion
-having count(distinct nombreestacion)>1;
+having count(distinct nombreestacion)>1
+order by total_nombres desc;
 
 -- Estación con nombre duplicado: 0027015330
 select distinct codigoestacion,nombreestacion
@@ -341,7 +342,7 @@ from datos_temporales;
 create index idx_departamentos_lower_nombre ON departamentos (lower(nombre));
 
 -- Devolver el Id generado a la tabla provisional
-alter table datos_temporales add column departamento_id int;
+    alter table datos_temporales add column departamento_id int;
 
 update datos_temporales dt
 set departamento_id = d.id

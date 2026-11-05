@@ -17,8 +17,8 @@ Los datos originales fueron tomados de la Plataforma Nacional de Datos Abiertos 
 Filtros aplicados:
 
 - **Departamento**: Antioquia
-- **Rango fechas**: Abril1 de 2024, 12:00 am a Mayo 31 de 2026, 11:58 pm.
-- **Total registros estimados**: ~ 1'300.461 filas.
+- **Rango fechas**: Enero 1 de 2025, 12:00 am a Octubre 31 de 2026, 11:58 pm.
+- **Total registros estimados**: ~ 1'390.624 filas.
 
 **Importante**: Los datos aquí expuestos son utilizados con fines académicos. Por favor acceda al recurso relacionado para conocer más información al respecto.
 
