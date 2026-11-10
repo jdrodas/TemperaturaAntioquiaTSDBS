@@ -316,7 +316,7 @@ create table observaciones
 (
     id              integer generated always as identity constraint observaciones_pk primary key,
     estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
-    valor           float not null,
+    valor           numeric(5,2) not null,
     fecha           timestamp without time zone not null 
 );
 
@@ -403,11 +403,10 @@ from datos_temporales;
 insert into observaciones (estacion_id, valor, fecha)
 select distinct
     codigoestacion,
-    replace(valorobservado,',','.')::double precision valor_medicion,
+    valorobservado::numeric valor_medicion,
     to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM') fecha_medicion
 from datos_temporales
 order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codigoestacion;
-
 
 -- Agregar columna calculada persistida fecha_dia generada a partir de la fecha
 alter table observaciones 
@@ -429,21 +428,31 @@ select
     max(to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM')) fecha_minima
 from datos_temporales;
 
+/*
+fecha_minima: 2025-01-01 00:00:00.000000 +00:00
+fecha_minima: 2026-10-31 23:58:00.000000 +00:00
+*/
+
 -- Normalizados
 select
     min(fecha) fecha_minima,
     max(fecha) fecha_maxima
 from observaciones;
 
+/*
+fecha_minima: 2025-01-01 00:00:00.000000
+fecha_maxima: 2026-10-31 23:58:00.000000
+*/
+
 -- ==========================================================
 -- Validación de duplicados exactos eliminados al normalizar
 -- ==========================================================
 
 /*
-Antes de normalizar: 1'546.662 registros
-Después de normalizar: 1'300.461 registros
+Antes de normalizar: 1'390.624 registros
+Después de normalizar: 1'254.201 registros
 
-Duplicados exactos eliminados: 246.201 registros
+Duplicados exactos eliminados: 136.423 registros
 */
 
 
@@ -539,13 +548,13 @@ select
     o.estacion_id,
     o.fecha_dia dia,
     COUNT(*) num_observaciones,
-    MIN(o.valor) temp_minima,
-    MAX(o.valor) temp_maxima,
-    AVG(o.valor) temp_promedio,
-    STDDEV(o.valor) temp_stddev,
-    PERCENTILE_CONT(0.25) within group (order by o.valor)  percentil_25,
-    PERCENTILE_CONT(0.50) within group (order by o.valor)  mediana,
-    PERCENTILE_CONT(0.75) within group (order by o.valor)  percentil_75,
+    ROUND(MIN(o.valor)::numeric,2) temp_minima,
+    ROUND(MAX(o.valor)::numeric,2) temp_maxima,
+    ROUND(AVG(o.valor)::numeric,2) temp_promedio,
+    ROUND(STDDEV(o.valor)::numeric,2) temp_stddev,
+    ROUND(PERCENTILE_CONT(0.25) within group (order by o.valor)::numeric,2)  percentil_25,
+    ROUND(PERCENTILE_CONT(0.50) within group (order by o.valor)::numeric,2)  mediana,
+    ROUND(PERCENTILE_CONT(0.75) within group (order by o.valor)::numeric,2)  percentil_75,
     MIN(o.fecha) primera_obs_dia,
     MAX(o.fecha) ultima_obs_dia
 FROM observaciones o
@@ -570,11 +579,11 @@ select
     SUM(num_observaciones)   num_observaciones,
     MIN(temp_minima)         temp_minima,
     MAX(temp_maxima)         temp_maxima,
-    ROUND(AVG(temp_promedio)::numeric, 4)  temp_promedio,
-    ROUND(AVG(temp_stddev)::numeric, 4)    temp_stddev,
-    ROUND(AVG(percentil_25)::numeric, 4)   percentil_25,
-    ROUND(AVG(mediana)::numeric, 4)        mediana,
-    ROUND(AVG(percentil_75)::numeric, 4)   percentil_75,
+    ROUND(AVG(temp_promedio)::numeric, 2)  temp_promedio,
+    ROUND(AVG(temp_stddev)::numeric, 2)    temp_stddev,
+    ROUND(AVG(percentil_25)::numeric, 2)   percentil_25,
+    ROUND(AVG(mediana)::numeric, 2)        mediana,
+    ROUND(AVG(percentil_75)::numeric, 2)   percentil_75,
     COUNT(DISTINCT dia)                    dias_con_datos
 from mv_resumen_diario
 group by DATE_TRUNC('month', dia), estacion_id, dia;
@@ -711,8 +720,6 @@ SELECT
     END                          tipo_outlier
 FROM observaciones o
 WHERE
-       o.valor < -5.0
-    OR o.valor > 45.0
     OR o.valor <  5.0
     OR o.valor > 35.0;
 

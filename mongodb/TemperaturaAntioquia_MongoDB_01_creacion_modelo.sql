@@ -1,7 +1,7 @@
--- Scripts de clase - Mayo de 2026
+-- Scripts de clase - Noviembre de 2026
 -- Juan Dario Rodas - jdrodas@hotmail.com
 
--- Proyecto: Analisis de Temperatura en Antioquia para el año 2024 y 2026
+-- Proyecto: Analisis de Temperatura en Antioquia para el año 2025 y 2026
 -- Motor de Base de datos: MongoDB 8.3.x
 -- Version: NoSQL Orientada al documento
 
@@ -9,11 +9,16 @@
 -- Abastecimiento de imagen en Docker
 -- ***********************************
  
--- Descargar la imagen
-docker pull mongodb/mongodb-community-server
+-- Descargar la imagen oficial
+docker pull mongo:latest
 
 -- Crear el contenedor
-docker run --name tempAnt-mongodb -e “MONGO_INITDB_ROOT_USERNAME=mongoadmin” -e MONGO_INITDB_ROOT_PASSWORD=unaClav3 -p 27017:27017 -d mongodb/mongodb-community-server:latest
+docker run --name tempAnt-mongodb \
+  -e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
+  -e MONGO_INITDB_ROOT_PASSWORD=unaClav3 \
+  -e GLIBC_TUNABLES=glibc.pthread.rseq=1 \
+  -p 27017:27017 \
+  -d mongo:latest
 
 -- ****************************************
 -- Creación de base de datos y usuarios
