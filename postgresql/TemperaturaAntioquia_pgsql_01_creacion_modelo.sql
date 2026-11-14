@@ -311,6 +311,18 @@ comment on column estaciones.municipio_id is 'Id del municipio donde está la es
 comment on column estaciones.latitud is 'Componente latitud de la coordenada geográfica de la estación';
 comment on column estaciones.longitud is 'Componente longitud de la coordenada geográfica de la estación';
 
+
+-- Tabla: observaciones_crudas
+create table observaciones_crudas
+(
+    id              integer generated always as identity constraint observaciones_crudas_pk primary key,
+    estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
+    valor           numeric(5,2) not null,
+    fecha           timestamp without time zone not null 
+);
+
+
+
 -- Tabla: Observaciones
 create table observaciones
 (
@@ -399,6 +411,16 @@ select distinct
     replace(longitud,',','.')::double precision longitud
 from datos_temporales;
 
+-- Observaciones crudas:
+insert into observaciones_crudas (estacion_id, valor, fecha)
+select 
+    codigoestacion,
+    valorobservado::numeric valor_medicion,
+    to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM') fecha_medicion
+from datos_temporales
+order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codigoestacion;
+
+
 -- Observaciones:
 insert into observaciones (estacion_id, valor, fecha)
 select distinct
@@ -433,7 +455,7 @@ fecha_minima: 2025-01-01 00:00:00.000000 +00:00
 fecha_minima: 2026-10-31 23:58:00.000000 +00:00
 */
 
--- Normalizados
+-- con tipado de datos
 select
     min(fecha) fecha_minima,
     max(fecha) fecha_maxima
@@ -989,9 +1011,9 @@ drop view v_info_zonas;
 drop materialized view mv_gaps_por_estacion;
 drop materialized view mv_intervalos;
 drop materialized view mv_inventario_geografico;
-drop materialized view mv_resumen_diario;
 drop materialized view mv_resumen_mensual;
 drop materialized view mv_stats_iqr;
+drop materialized view mv_resumen_diario;
 
 -- Borrado de tablas
 drop table observaciones;
