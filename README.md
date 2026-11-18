@@ -18,8 +18,13 @@ Filtros aplicados:
 
 - **Departamento**: Antioquia
 - **Rango fechas**: Enero 1 de 2025, 12:00 am a Octubre 31 de 2026, 11:58 pm.
-- **Tipo de Sensor**: 0068 - Temperatura del aire a 2 m - °C
+- **Tipo de Sensor**:
+>- 0068 - Temperatura del aire a 2 m - °C
+>- 0071 - GPRS - TEMPERATURA DEL AIRE A 2 m - Aeropuertos
+
 - **Total registros estimados**: ~ 1'390.624 filas.
+>- Año 2025: 755.207 filas
+>- Año 2026 (Hasta Octubre 31): 635.417 filas
 
 **Importante**: Los datos aquí expuestos son utilizados con fines académicos. Por favor acceda al recurso relacionado para conocer más información al respecto.
 
@@ -41,15 +46,15 @@ Filtros aplicados:
 El caso de estudio se centra en un sistema de **monitoreo de temperatura ambiente** con las siguientes características:
 
 - **Múltiples estaciones de medición** distribuidas en diferentes municipios del departamento de Antioquia
-- **Período de análisis**: Abril 2024 – Mayo 2026 (~2 años, 4 meses)
-- **Frecuencia de medición**: Aproximadamente cada 15 minutos
+- **Período de análisis**: Enero 2025 – Octubre 2026 (~ 22 meses)
+- **Frecuencia de medición**: Cada hora para sensor 0068 y cada 2 minutos para sensor 0071
 - **Datos temporales**: Timestamps precisos para cada medición
 
 La ampliación del rango a tres años permite realizar análisis estacionales por épocas climáticas y meses, enriqueciendo el estudio con patrones de largo plazo típicos de un entorno IoT de monitoreo ambiental.
 
 Este dominio es ideal para evaluar bases de datos de series de tiempo debido a:
 
-- Alto volumen de inserciones secuenciales (~1.2 millones de registros)
+- Alto volumen de inserciones secuenciales (~1.3 millones de registros)
 - Patrones de consulta basados en rangos temporales
 - Necesidad de agregaciones y análisis estadísticos
 - Importancia de la eficiencia en almacenamiento

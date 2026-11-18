@@ -183,70 +183,6 @@ create table datos_temporales
     UnidadMedida        text
 );
 
--- ===========================================
--- Depuración de inconsistencias en datos de
--- estaciones
--- ===========================================
-
--- Unicidad de estaciones
-select distinct codigoestacion,
-                count(distinct nombreestacion) total_nombres
-from datos_temporales
-group by codigoestacion
-having count(distinct nombreestacion)>1
-order by total_nombres desc;
-
--- Estación con nombre duplicado: 0027015330
-select distinct codigoestacion,nombreestacion
-from datos_temporales
-where codigoestacion = '0027015330'
-order by codigoestacion;
-
-update datos_temporales
-set nombreestacion = 'AEROPUERTO OLAYA HERRERA'
-where codigoestacion = '0027015330';
-
--- Unicidad de coordenadas geográficas
-select distinct
-    codigoestacion,
-    nombreestacion,
-    count(distinct latitud) total_latitudes
-from datos_temporales
-group by
-    codigoestacion,
-    nombreestacion
-having count(distinct latitud) > 1;
-
-select distinct
-    codigoestacion,
-    nombreestacion,
-    count(distinct longitud) total_longitudes
-from datos_temporales
-group by
-    codigoestacion,
-    nombreestacion
-having count(distinct longitud) > 1;
-
-/*
-Estaciones identificadas con problema de coordenadas:
-
-0023085270  AEROPUERTO J.M. CORDOVA
-0027015330  AEROPUERTO OLAYA HERRERA
-0026185020  MESOPOTAMIA
-*/
-
-update datos_temporales
-set latitud = '6,1686111', longitud = '-75,42611111'
-where codigoestacion = '0023085270';
-
-update datos_temporales
-set latitud = '5,88636111', longitud = '-75,31863889'
-where codigoestacion = '0026185020';
-
-update datos_temporales
-set latitud = '6,2246389', longitud = '-75,588225'
-where codigoestacion = '0027015330';
-
 -- =====================================
 -- Creación de tablas del modelo
 -- =====================================
@@ -272,17 +208,6 @@ create table sensores
 comment on table sensores is 'Sensores de Medición de Temperatura';
 comment on column sensores.id is 'Id del sensor';
 comment on column sensores.nombre is 'Nombre del sensor';
-
--- Tabla: Departamentos
-create table departamentos
-(
-    id              integer generated always as identity constraint departamentos_pk primary key,
-    nombre          text not null constraint nombre_departamento_uk unique
-);
-
-comment on table departamentos is 'Departamentos de Colombia';
-comment on column departamentos.id is 'Id del departamento';
-comment on column departamentos.nombre is 'Nombre del departamento';
 
 -- Tabla: zonas
 create table zonas
@@ -322,9 +247,6 @@ create table estaciones
     constraint coordenadas_estacion_uk unique(latitud,longitud)
 );
 
-alter table estaciones add constraint estaciones_nombre_uk unique (nombre);
-create index idx_estaciones_lower_nombre ON estaciones (lower(nombre));
-
 comment on table estaciones is 'Estaciones de Medición de Temperatura';
 comment on column estaciones.id is 'Id de la estación';
 comment on column estaciones.nombre is 'nombre de la estación';
@@ -332,23 +254,11 @@ comment on column estaciones.municipio_id is 'Id del municipio donde está la es
 comment on column estaciones.latitud is 'Componente latitud de la coordenada geográfica de la estación';
 comment on column estaciones.longitud is 'Componente longitud de la coordenada geográfica de la estación';
 
-
--- Tabla: observaciones_crudas
-create table observaciones_crudas
-(
-    id              integer generated always as identity constraint observaciones_crudas_pk primary key,
-    estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
-    sensor_id       text not null constraint observaciones_sensores_fk references sensores,
-    valor           numeric(5,2) not null,
-    fecha           timestamp without time zone not null 
-);
-
-
-
 -- Tabla: Observaciones
 create table observaciones
 (
     id              integer generated always as identity constraint observaciones_pk primary key,
+    sensor_id       text not null constraint observaciones_sensores_fk references sensores,    
     estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
     valor           numeric(5,2) not null,
     fecha           timestamp without time zone not null 
@@ -356,12 +266,10 @@ create table observaciones
 
 comment on table observaciones is 'Observaciones de temperatura realizadas por las estaciones';
 comment on column observaciones.id is 'Id de la observación';
+comment on column observaciones.sensor_id is 'Id del sensor que hizo la observación';
 comment on column observaciones.estacion_id is 'Id de la estación que hizo la observación';
 comment on column observaciones.valor is 'valor de temperatura obtenido en la observación';
 comment on column observaciones.fecha is 'fecha en la que se realizó la la observación de temperatura';
-
-create index concurrently idx_obs_estacion_sensor_fecha
-    ON observaciones (estacion_id, fecha);
 
 -- ===========================================
 -- Cargue de datos desde la tabla provisional 
@@ -371,9 +279,6 @@ create index concurrently idx_obs_estacion_sensor_fecha
 insert into departamentos (nombre)
 select distinct departamento
 from datos_temporales;
-
--- Creación de indice
-create index idx_departamentos_lower_nombre ON departamentos (lower(nombre));
 
 -- Devolver el Id generado a la tabla provisional
     alter table datos_temporales add column departamento_id int;
@@ -393,9 +298,6 @@ from datos_temporales;
 insert into zonas (nombre)
 select distinct ZonaHidrografica from datos_temporales;
 
--- Creación de indice
-create index idx_zonas_lower_nombre ON zonas (lower(nombre));
-
 -- Devolver el Id generado a la tabla provisional
 alter table datos_temporales add column zona_id int;
 
@@ -405,15 +307,11 @@ from zonas z
 where dt.zona_id is null
 and lower(z.nombre) = lower(dt.ZonaHidrografica);
 
-
 -- Municipios
 insert into municipios (nombre, departamento_id, zona_id)
 select distinct municipio, departamento_id, zona_id
 from datos_temporales
 order by zona_id, municipio;
-
--- Creación de indice
-create index idx_municipios_lower_nombre ON municipios (lower(nombre));
 
 -- Devolver el Id generado a la tabla provisional
 alter table datos_temporales add column municipio_id int;
@@ -427,7 +325,6 @@ and m.zona_id = dt.zona_id
 and m.departamento_id = dt.departamento_id
 and lower(m.nombre) = lower(dt.municipio);
 
-
 -- Estaciones
 insert into estaciones (id, nombre, municipio_id,latitud,longitud)
 select distinct
@@ -437,17 +334,6 @@ select distinct
     replace(latitud,',','.')::double precision latitud,
     replace(longitud,',','.')::double precision longitud
 from datos_temporales;
-
--- Observaciones crudas:
-insert into observaciones_crudas (estacion_id, sensor_id, valor, fecha)
-select 
-    codigoestacion,
-    codigosensor,
-    valorobservado::numeric valor_medicion,
-    to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM') fecha_medicion
-from datos_temporales
-order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codigoestacion;
-
 
 -- Observaciones:
 insert into observaciones (estacion_id, valor, fecha)
@@ -461,12 +347,6 @@ order by to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM'), codi
 -- Agregar columna calculada persistida fecha_dia generada a partir de la fecha
 alter table observaciones 
     add column fecha_dia date generated always as (fecha::date) stored;
-
-create index idx_obs_estacion_fecha_dia
-    on observaciones (estacion_id, fecha_dia);
-
-create index concurrently idx_obs_fecha_dia
-    ON observaciones (fecha_dia);    
 
 
 -- ===========================================
@@ -487,24 +367,12 @@ fecha_minima: 2026-10-31 23:00:00.000000 +00:00
 select
     min(fecha) fecha_minima,
     max(fecha) fecha_maxima
-from observaciones_crudas;
+from observaciones;
 
 /*
 fecha_minima: 2025-01-01 00:00:00.000000
 fecha_maxima: 2026-10-31 23:58:00.000000
 */
-
--- ==============================================================
--- Validación de duplicados exactos luego de conversión de tipo
--- ==============================================================
-
-/*
-Antes de conversion de tipos: 25.736 registros
-Después de conversion de tipos: 25.736 registros
-
--- Para el sensor 0068, no hay duplicados exactos en el mes octubre/2026
-*/
-
 
 -- ===========================================
 -- Creación de Vistas y Vistas Materializadas
@@ -596,6 +464,7 @@ create index idx_mv_inventario_geografico_zona
 create materialized view mv_resumen_diario as
 select
     o.estacion_id,
+    o.sensor_id,
     o.fecha_dia dia,
     COUNT(*) num_observaciones,
     ROUND(MIN(o.valor)::numeric,2) temp_minima,
@@ -608,7 +477,7 @@ select
     MIN(o.fecha) primera_obs_dia,
     MAX(o.fecha) ultima_obs_dia
 FROM observaciones o
-GROUP BY o.estacion_id, o.fecha_dia;
+GROUP BY o.estacion_id, o.sensor_id, o.fecha_dia;
 
 create unique index idx_mv_resumen_diario_unique
     on mv_resumen_diario (estacion_id, dia);
@@ -625,6 +494,7 @@ create materialized view mv_resumen_mensual as
 select
     DATE_TRUNC('month', dia)  mes,
     estacion_id,
+    sensor_id,
     dia,
     SUM(num_observaciones)   num_observaciones,
     MIN(temp_minima)         temp_minima,
@@ -636,10 +506,10 @@ select
     ROUND(AVG(percentil_75)::numeric, 2)   percentil_75,
     COUNT(DISTINCT dia)                    dias_con_datos
 from mv_resumen_diario
-group by DATE_TRUNC('month', dia), estacion_id, dia;
+group by DATE_TRUNC('month', dia), estacion_id, sensor_id, dia;
 
 create unique index idx_mv_resumen_mensual_unique
-    on mv_resumen_mensual (estacion_id, mes,dia);
+    on mv_resumen_mensual (estacion_id, sensor_id, mes,dia);
 
 create index idx_mv_resumen_mensual_mes
     on mv_resumen_mensual (mes);
@@ -653,6 +523,7 @@ create materialized view mv_intervalos as
 with obs_ordenadas as (
     select
         estacion_id,
+        sensor_id,
         fecha,
         LAG(fecha) over (
             partition by estacion_id
@@ -662,6 +533,7 @@ with obs_ordenadas as (
 )
 select
     estacion_id,
+    sensor_id,
     fecha_anterior intervalo_inicio,
     fecha intervalo_fin,
     EXTRACT(EPOCH from (fecha - fecha_anterior)) / 60.0 intervalo_minutos,
@@ -680,6 +552,7 @@ create index idx_mv_intervalos_horas
 create or replace view v_gaps_resumen as
 SELECT
     i.estacion_id,
+    i.sensor_id,
     COUNT(*)                                   num_gaps,
     ROUND(MIN(i.intervalo_horas)::numeric, 1)  gap_minimo_horas,
     ROUND(MAX(i.intervalo_horas)::numeric, 1)  gap_maximo_horas,
@@ -687,12 +560,13 @@ SELECT
     ROUND(SUM(i.intervalo_horas)::numeric, 1)  total_horas_perdidas
 FROM mv_intervalos i
 WHERE i.intervalo_horas IS NOT NULL
-GROUP BY i.estacion_id;
+GROUP BY i.estacion_id, i.sensor_id;
 
 -- vista: v_intervalos_por_estacion
 create or replace view v_intervalos_por_estacion as
 SELECT
     i.estacion_id,
+    i.sensor_id,
     COUNT(*)                                           num_intervalos,
     ROUND(MIN(i.intervalo_minutos)::numeric, 1)        intervalo_minimo_min,
     ROUND(MAX(i.intervalo_minutos)::numeric, 1)        intervalo_maximo_min,
@@ -704,18 +578,20 @@ SELECT
     ROUND(STDDEV(i.intervalo_minutos)::numeric, 1)     intervalo_stddev_min
 FROM mv_intervalos i
 WHERE i.intervalo_minutos IS NOT NULL
-GROUP BY i.estacion_id;
+GROUP BY i.estacion_id, i.sensor_id;
 
 -- vista: v_duplicados_exactos
 create or replace view v_duplicados_exactos as
 SELECT
     o.estacion_id,
+    o.sensor_id,
     o.fecha,
     o.valor               temperatura,
     COUNT(*)              num_repeticiones
 FROM observaciones o
 GROUP BY
     o.estacion_id,
+    o.sensor_id,
     o.fecha,
     o.valor
 HAVING COUNT(*) > 1;
@@ -725,14 +601,15 @@ HAVING COUNT(*) > 1;
 create or replace view v_cuasi_duplicados AS
 SELECT
     o.estacion_id,
+    o.sensor_id,
     o.fecha                                 fecha_actual,
     o.valor                                 valor_actual,
     LEAD(o.fecha) OVER (
-        PARTITION BY o.estacion_id
+        PARTITION BY o.estacion_id, o.sensor_id
         ORDER BY o.fecha
     )                                       fecha_siguiente,
     LEAD(o.valor) OVER (
-        PARTITION BY o.estacion_id
+        PARTITION BY o.estacion_id, o.sensor_id
         ORDER BY o.fecha
     )                                       valor_siguiente
 FROM observaciones o;
@@ -741,6 +618,7 @@ FROM observaciones o;
 create or replace view v_stats_temperatura_por_estacion as
 SELECT
     d.estacion_id,
+    d.sensor_id,
     COUNT(DISTINCT d.dia)                    dias_analizados,
     SUM(d.num_observaciones)                 total_observaciones,
     ROUND(MIN(d.temp_minima)::numeric, 2)    temp_minima,
@@ -754,12 +632,13 @@ SELECT
         (MAX(d.temp_maxima) - MIN(d.temp_minima))::numeric, 2
     )                                        rango_termico
 FROM mv_resumen_diario d
-GROUP BY d.estacion_id;
+GROUP BY d.estacion_id, d.sensor_id;
 
 -- vista: v_outliers_fisicos
 create or replace view v_outliers_fisicos AS
 SELECT
     o.estacion_id,
+    o.sensor_id,
     o.fecha,
     ROUND(o.valor::numeric, 2)  temperatura,
     CASE
@@ -770,13 +649,13 @@ SELECT
     END                          tipo_outlier
 FROM observaciones o
 WHERE
-    OR o.valor <  5.0
-    OR o.valor > 35.0;
+    (o.valor < -5.0 OR o.valor > 45.0 OR o.valor <  5.0 OR o.valor > 35.0);
 
 -- Vista materializada: mv_stats_iqr
 create materialized view mv_stats_iqr as
 select
     estacion_id,
+    sensor_id,
     COUNT(distinct dia) dias_analizados,
     AVG(temp_promedio)  media,
     STDDEV(temp_promedio) desviacion,
@@ -788,17 +667,18 @@ select
     PERCENTILE_CONT(0.75) within group (order by temp_promedio) -
     PERCENTILE_CONT(0.25) within group (order by temp_promedio) iqr
 from mv_resumen_diario
-group by estacion_id;
+group by estacion_id, sensor_id;
 
 -- Índice único requerido para REFRESH CONCURRENTLY
 create unique index idx_mv_stats_iqr_unique
-    on mv_stats_iqr (estacion_id);    
+    on mv_stats_iqr (estacion_id, sensor_id);    
 
 
 -- vista: v_outliers_iqr
 create or replace view v_outliers_iqr AS
 SELECT
     o.estacion_id,
+    o.sensor_id,
     o.fecha,
     ROUND(o.valor::numeric, 2)                                  temperatura,
     ROUND(st.percentil_25::numeric, 2)                          percentil_25,
@@ -822,6 +702,7 @@ WHERE
 create or replace view v_outliers_zscore AS
 SELECT
     o.estacion_id,
+    o.sensor_id,
     o.fecha,
     ROUND(o.valor::numeric, 2)                                          temperatura,
     ROUND(st.media::numeric, 2)                                         media_estacion,
@@ -1064,4 +945,3 @@ drop sequence departamentos_id_seq;
 drop sequence municipios_id_seq;
 drop sequence observaciones_id_seq;
 drop sequence zonas_id_seq;
-
