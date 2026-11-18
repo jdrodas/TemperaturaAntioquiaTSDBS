@@ -262,6 +262,27 @@ comment on table departamentos is 'Departamentos de Colombia';
 comment on column departamentos.id is 'Id del departamento';
 comment on column departamentos.nombre is 'Nombre del departamento';
 
+-- Tabla: Sensores
+create table sensores
+(
+    id              text not null constraint sensores_pk primary key,
+    nombre          text not null constraint nombre_sensores_uk unique
+);
+
+comment on table sensores is 'Sensores de Medición de Temperatura';
+comment on column sensores.id is 'Id del sensor';
+comment on column sensores.nombre is 'Nombre del sensor';
+
+-- Tabla: Departamentos
+create table departamentos
+(
+    id              integer generated always as identity constraint departamentos_pk primary key,
+    nombre          text not null constraint nombre_departamento_uk unique
+);
+
+comment on table departamentos is 'Departamentos de Colombia';
+comment on column departamentos.id is 'Id del departamento';
+comment on column departamentos.nombre is 'Nombre del departamento';
 
 -- Tabla: zonas
 create table zonas
@@ -317,6 +338,7 @@ create table observaciones_crudas
 (
     id              integer generated always as identity constraint observaciones_crudas_pk primary key,
     estacion_id     text not null constraint observaciones_estaciones_fk references estaciones,
+    sensor_id       text not null constraint observaciones_sensores_fk references sensores,
     valor           numeric(5,2) not null,
     fecha           timestamp without time zone not null 
 );
@@ -361,6 +383,11 @@ set departamento_id = d.id
 from departamentos d
 where dt.departamento_id is null
 and lower(d.nombre) = lower(dt.departamento);
+
+-- Cargue de datos en la tabla sensores desde la tabla de datos temporales
+insert into sensores (id,nombre)
+select distinct codigosensor, descripcionsensor
+from datos_temporales;
 
 -- Zonas 
 insert into zonas (nombre)
@@ -412,9 +439,10 @@ select distinct
 from datos_temporales;
 
 -- Observaciones crudas:
-insert into observaciones_crudas (estacion_id, valor, fecha)
+insert into observaciones_crudas (estacion_id, sensor_id, valor, fecha)
 select 
     codigoestacion,
+    codigosensor,
     valorobservado::numeric valor_medicion,
     to_timestamp(fechaobservacion::text, 'YYYY Mon DD HH12:MI:SS AM') fecha_medicion
 from datos_temporales
@@ -452,34 +480,34 @@ from datos_temporales;
 
 /*
 fecha_minima: 2025-01-01 00:00:00.000000 +00:00
-fecha_minima: 2026-10-31 23:58:00.000000 +00:00
+fecha_minima: 2026-10-31 23:00:00.000000 +00:00
 */
 
 -- con tipado de datos
 select
     min(fecha) fecha_minima,
     max(fecha) fecha_maxima
-from observaciones;
+from observaciones_crudas;
 
 /*
 fecha_minima: 2025-01-01 00:00:00.000000
 fecha_maxima: 2026-10-31 23:58:00.000000
 */
 
--- ==========================================================
--- Validación de duplicados exactos eliminados al normalizar
--- ==========================================================
+-- ==============================================================
+-- Validación de duplicados exactos luego de conversión de tipo
+-- ==============================================================
 
 /*
-Antes de normalizar: 1'390.624 registros
-Después de normalizar: 1'254.201 registros
+Antes de conversion de tipos: 25.736 registros
+Después de conversion de tipos: 25.736 registros
 
-Duplicados exactos eliminados: 136.423 registros
+-- Para el sensor 0068, no hay duplicados exactos en el mes octubre/2026
 */
 
 
 -- ===========================================
--- Creación de Vistas y Vistas Materializads
+-- Creación de Vistas y Vistas Materializadas
 -- ===========================================
 
 create view v_info_departamentos as
@@ -884,6 +912,11 @@ select id zona_id,
        nombre zona_nombre
 from zonas;
 
+-- Sensores
+select id sensor_id,
+       nombre sensor_nombre
+from sensores;
+
 -- Municipios
 select distinct
     m.id municipio_id,
@@ -908,15 +941,18 @@ select
 from estaciones e join municipios m on e.municipio_id = m.id
 order by e.nombre;
 
--- Observaciones
+-- Observaciones_crudas
 select
     o.id observacion_id,
     o.estacion_id,
     e.nombre estacion_nombre,
+    o.sensor_id,
+    s.nombre sensor_nombre,
     o.valor observacion_valor,
     o.fecha observacion_fecha
-from observaciones o
-    join estaciones e on o.estacion_id = e.id;
+from observaciones_crudas o
+    join estaciones e on o.estacion_id = e.id
+    join sensores s on o.sensor_id = s.id;
 
 
 -- =====================================================

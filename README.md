@@ -18,6 +18,7 @@ Filtros aplicados:
 
 - **Departamento**: Antioquia
 - **Rango fechas**: Enero 1 de 2025, 12:00 am a Octubre 31 de 2026, 11:58 pm.
+- **Tipo de Sensor**: 0068 - Temperatura del aire a 2 m - °C
 - **Total registros estimados**: ~ 1'390.624 filas.
 
 **Importante**: Los datos aquí expuestos son utilizados con fines académicos. Por favor acceda al recurso relacionado para conocer más información al respecto.
